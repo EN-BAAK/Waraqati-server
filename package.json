@@ -1,0 +1,32 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "This is a server for Waraqati project",
+  "main": "waraqatiServer.js",
+  "scripts": {
+    "dev": "nodemon waraqatiServer.ts",
+    "build": "tsc",
+    "start": "node dist/waraqatiServer.js",
+    "prepare": "npm run clean && npm run build",
+    "clean": "rm -rf dist"
+  },
+  "author": "Bassel abo khabsa",
+  "license": "ISC",
+  "dependencies": {
+    "bcryptjs": "^3.0.2",
+    "dotenv": "^17.2.1",
+    "express": "^5.1.0",
+    "express-validator": "^7.2.1",
+    "jsonwebtoken": "^9.0.2",
+    "mysql2": "^3.14.3",
+    "sequelize": "^6.37.7"
+  },
+  "devDependencies": {
+    "@types/bcrypt": "^6.0.0",
+    "@types/express": "^5.0.3",
+    "@types/node": "^24.3.0",
+    "nodemon": "^3.1.10",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.2"
+  }
+}

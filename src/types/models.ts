@@ -1,0 +1,45 @@
+import { Optional } from "sequelize";
+import { Sex } from "./vars";
+
+export interface UserAttributes {
+  id: number;
+  firstName: string;
+  middleName?: string | null;
+  lastName: string;
+  email: string;
+  phone: string;
+  identityNumber: string;
+  password: string;
+  imgUrl?: string | null,
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
+export interface UserCreationAttributes extends Optional<UserAttributes, "id" | "middleName"> { }
+
+export interface EmployeeAttributes {
+  id: number;
+  userId: number;
+  rate: number;
+  isAvailable: boolean;
+  isAdmin: boolean;
+  creditor: number;
+  debit: number;
+}
+
+export interface EmployeeCreationAttributes extends Omit<EmployeeAttributes, "id"> { }
+
+export interface ClientAttributes {
+  id: number;
+  userId: number;
+  country: string;
+  age: number;
+  sex: Sex;
+  creditor: number;
+  debit: number;
+  isSpecial: boolean;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
+export interface ClientCreationAttributes extends Omit<ClientAttributes, "id"> { }
