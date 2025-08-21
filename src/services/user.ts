@@ -120,3 +120,20 @@ export const resetPasswordService = async (code: string, newPassword: string) =>
 
   return { message: "Password successfully reset" };
 };
+
+export const changePassword = async (
+  userId: number,
+  password: string,
+  newPassword: string
+) => {
+  const user = await User.findByPk(userId);
+  if (!user) throw new ErrorHandler("User not found", 404);
+
+  const isMatch = await user.checkPassword(password);
+  if (!isMatch) throw new ErrorHandler("Current password is incorrect", 401);
+
+  user.password = newPassword;
+  await user.save();
+
+  return { message: "Password changed successfully" };
+};
