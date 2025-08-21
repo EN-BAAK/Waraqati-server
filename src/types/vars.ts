@@ -9,3 +9,8 @@ export enum ROLE {
   EMPLOYEE = "EMPLOYEE",
   ADMIN = "ADMIN"
 }
+
+export type BlacklistedToken = {
+  token: string;
+  expiresAt: number;
+};

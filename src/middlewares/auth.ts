@@ -6,13 +6,18 @@ import ErrorHandler, { catchAsyncErrors } from './error';
 import User from '../models/user';
 import Client from '../models/client';
 import Employee from '../models/employee';
+import { isBlacklisted } from '../utils/tokenBlacklist';
 
 export const verifyAuthentication = catchAsyncErrors(
-  async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+  async (req: AuthenticatedRequest, _: Response, next: NextFunction) => {
     const token = req.cookies?.[process.env.COOKIE_NAME!];
 
     if (!token)
       return next(new ErrorHandler('Unauthorized: Token not found', 401));
+
+    if (isBlacklisted(token)) {
+      return next(new ErrorHandler("Unauthorized: Token expired", 401));
+    }
 
     const payload = jwt.verify(
       token,
@@ -49,7 +54,7 @@ export const verifyAuthentication = catchAsyncErrors(
 );
 
 export const requireRole = (allowedRoles: ROLE[]) => {
-  return catchAsyncErrors(async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+  return catchAsyncErrors(async (req: AuthenticatedRequest, _: Response, next: NextFunction) => {
     if (!req.id)
       return next(new ErrorHandler('User not loaded', 401));
 
