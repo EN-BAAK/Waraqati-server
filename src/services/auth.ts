@@ -1,6 +1,4 @@
 import User from "../models/user";
-import Client from "../models/client";
-import Employee from "../models/employee";
 import jwt from "jsonwebtoken";
 import ErrorHandler from "../middlewares/error";
 import { findUserByIdWithRole } from "./user";
