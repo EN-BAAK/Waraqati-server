@@ -1,7 +1,7 @@
 import { Router } from "express";
 import * as userController from "../controllers/user";
 import { validateId } from "../validations/users";
-import { validationMiddleware } from "../middlewares/error.middleware.ts";
+import { validationMiddleware } from "../middlewares/error";
 
 const router = Router();
 

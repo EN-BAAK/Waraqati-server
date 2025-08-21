@@ -1,7 +1,7 @@
 import { Router } from "express";
 import * as employeeController from "../controllers/employees";
 import { createEmployee_UserValidation, validatePagination, validateUserId } from "../validations/users";
-import { validationMiddleware } from "../middlewares/error.middleware.ts";
+import { validationMiddleware } from "../middlewares/error";
 
 const router = Router();
 

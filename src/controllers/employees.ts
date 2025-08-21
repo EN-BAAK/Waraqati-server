@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
 import * as employeeService from "../services/employees";
 import * as userService from "../services/user";
-import ErrorHandler, { catchAsyncErrors } from "../middlewares/error.middleware.ts";
-import { sendSuccessResponse } from "../middlewares/success.middleware";
+import ErrorHandler, { catchAsyncErrors } from "../middlewares/error";
+import { sendSuccessResponse } from "../middlewares/success";
 
 export const getEmployees = catchAsyncErrors(async (req: Request, res: Response) => {
   const page = parseInt(req.query.page as string, 10) || 1;

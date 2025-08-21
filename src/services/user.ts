@@ -1,5 +1,5 @@
 import path from "path";
-import ErrorHandler from "../middlewares/error.middleware.ts";
+import ErrorHandler from "../middlewares/error.js";
 import User from "../models/user";
 import { UserCreationAttributes } from "../types/models";
 import fs from "fs";
