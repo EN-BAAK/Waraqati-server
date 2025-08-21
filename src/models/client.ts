@@ -2,14 +2,14 @@ import { DataTypes, Model } from "sequelize";
 import db from "./index";
 import User from "./user";
 import { ClientAttributes, ClientCreationAttributes } from "../types/models";
-import { Sex } from "../types/vars";
+import { SEX } from "../types/vars";
 
 class Client extends Model<ClientAttributes, ClientCreationAttributes> implements ClientAttributes {
   public id!: number;
   public userId!: number;
   public country!: string;
   public age!: number;
-  public sex!: Sex;
+  public sex!: SEX;
   public creditor!: number;
   public debit!: number;
   public isSpecial!: boolean;
@@ -44,9 +44,9 @@ Client.init(
       defaultValue: 18
     },
     sex: {
-      type: DataTypes.ENUM(...Object.values(Sex)),
+      type: DataTypes.ENUM(...Object.values(SEX)),
       allowNull: false,
-      defaultValue: Sex.Male
+      defaultValue: SEX.Male
     },
     creditor: {
       type: DataTypes.FLOAT,

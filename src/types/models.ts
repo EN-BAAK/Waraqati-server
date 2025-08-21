@@ -1,5 +1,5 @@
 import { Optional } from "sequelize";
-import { Sex } from "./vars";
+import { SEX } from "./vars";
 
 export interface UserAttributes {
   id: number;
@@ -34,7 +34,7 @@ export interface ClientAttributes {
   userId: number;
   country: string;
   age: number;
-  sex: Sex;
+  sex: SEX;
   creditor: number;
   debit: number;
   isSpecial: boolean;

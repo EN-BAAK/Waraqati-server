@@ -1,6 +1,6 @@
 import Employee from "../models/employee";
 import User from "../models/user";
-import { EmployeeAttributes, EmployeeCreationAttributes } from "../types/models";
+import { EmployeeCreationAttributes } from "../types/models";
 
 export const getEmployees = async (page: number, limit: number) => {
   const offset = (page - 1) * limit;
