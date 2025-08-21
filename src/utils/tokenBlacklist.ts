@@ -3,6 +3,14 @@ import { BlacklistedToken } from "../types/vars";
 const tokenBlacklist: BlacklistedToken[] = [];
 
 export const addToBlacklist = (token: string, expiresAt: number) => {
+  const now = Date.now() / 1000;
+
+  for (let i = tokenBlacklist.length - 1; i >= 0; i--) {
+    if (tokenBlacklist[i].expiresAt < now) {
+      tokenBlacklist.splice(i, 1);
+    }
+  }
+
   tokenBlacklist.push({ token, expiresAt });
 };
 

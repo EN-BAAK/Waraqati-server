@@ -13,6 +13,7 @@ export const login = catchAsyncErrors(async (req: Request, res: Response) => {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: "lax",
+    maxAge: parseInt(process.env.COOKIE_EXPIRE_MS!, 10)
   });
 
   res.status(200).json({ user });
@@ -45,5 +46,5 @@ export const logout = catchAsyncErrors(async (req: Request, res: Response) => {
     sameSite: "lax",
   });
 
-  sendSuccessResponse(res, 200, "Logged out successfully")
-})
+  sendSuccessResponse(res, 200, "Logged out successfully");
+});
