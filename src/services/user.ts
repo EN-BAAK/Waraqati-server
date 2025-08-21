@@ -121,7 +121,7 @@ export const resetPasswordService = async (code: string, newPassword: string) =>
   return { message: "Password successfully reset" };
 };
 
-export const changePassword = async (
+export const changePasswordService = async (
   userId: number,
   password: string,
   newPassword: string

@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { changePassword as changePasswordService, forgotPasswordService, getImageById, resetPasswordService } from "../services/user";
+import { changePasswordService, forgotPasswordService, getImageById, resetPasswordService } from "../services/user";
 import { catchAsyncErrors } from "../middlewares/error";
 import { sendSuccessResponse } from "../middlewares/success";
 import { AuthenticatedRequest } from "../types/requests";
