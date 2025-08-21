@@ -114,3 +114,12 @@ export const createEmployee_UserValidation = [
   ...createUserValidation,
   ...createEmployeeValidation
 ];
+
+export const forgotPasswordValidation = [
+  body("email").notEmpty().isEmail().withMessage("Valid email is required"),
+];
+
+export const resetPasswordValidation = [
+  body("code").notEmpty().withMessage("Reset code is required"),
+  body("newPassword").notEmpty().isLength({ min: 6 }).withMessage("Password must be at least 6 characters"),
+];

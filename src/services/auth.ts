@@ -23,3 +23,4 @@ export const verifyService = async (userId: number) => {
   const userInfo = await findUserByIdWithRole(userId);
   return { message: "verified", user: userInfo };
 };
+

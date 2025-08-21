@@ -43,3 +43,13 @@ export interface ClientAttributes {
 }
 
 export interface ClientCreationAttributes extends Omit<ClientAttributes, "id"> { }
+
+export interface PasswordResetAttributes {
+  id?: number;
+  userId: number;
+  code: string;
+  expiresAt: Date;
+  isVerified: boolean;
+}
+
+export interface PasswordCreationResetAttributes extends Omit<PasswordResetAttributes, "id" | "isVerified"> { }
