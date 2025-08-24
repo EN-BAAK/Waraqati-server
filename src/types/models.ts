@@ -53,3 +53,8 @@ export interface PasswordResetAttributes {
 }
 
 export interface PasswordCreationResetAttributes extends Omit<PasswordResetAttributes, "id" | "isVerified"> { }
+
+export interface ManagerAttributes {
+  id: number;
+  userId: number;
+}

@@ -21,7 +21,7 @@ export const getClients = catchAsyncErrors(async (req: Request, res: Response) =
 
 export const getClientByUserId = catchAsyncErrors(async (req: Request, res: Response) => {
   const id = parseInt(req.params.userId, 10);
-  const client = await clientService.getClientById(id);
+  const client = await clientService.getClientByUserId(id);
 
   if (!client) throw new ErrorHandler("Client not found", 404);
   return sendSuccessResponse(res, 200, "Client has been found", { client });

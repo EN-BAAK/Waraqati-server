@@ -1,13 +1,13 @@
 import path from "path";
-import ErrorHandler from "../middlewares/error.js";
-import User from "../models/user";
+import ErrorHandler from "../middlewares/error";
+import { User } from "../models/user";
 import { UserCreationAttributes } from "../types/models";
 import fs from "fs";
-import Client from "../models/client.js";
-import Employee from "../models/employee.js";
+import { Client } from "../models/client";
+import { Employee } from "../models/employee";
 import { randomBytes } from "crypto";
-import { PasswordReset } from "../models/passwordReset.js";
-import { sendResetEmail } from "../utils/mail.js";
+import { PasswordReset } from "../models/passwordReset";
+import { sendResetEmail } from "../utils/mail";
 
 export const createUser = async (userData: UserCreationAttributes) => {
   const user = await User.create(userData);

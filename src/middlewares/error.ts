@@ -11,9 +11,9 @@ class ErrorHandler extends Error {
 
 export const error: ErrorRequestHandler = (
   err: any,
-  req: Request,
+  _: Request,
   res: Response,
-  next: NextFunction
+  __: NextFunction
 ) => {
   err.message = err.message || "Internal server error";
   err.statusCode = err.statusCode || 500;
@@ -61,7 +61,7 @@ export const catchAsyncErrors = (
   };
 };
 
-export async function validationMiddleware(req: Request, res: Response, next: NextFunction) {
+export async function validationMiddleware(req: Request, _: Response, next: NextFunction) {
   const errors = validationResult(req);
 
   if (!errors.isEmpty()) {

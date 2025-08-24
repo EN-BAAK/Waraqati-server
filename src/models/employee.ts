@@ -1,9 +1,7 @@
-import { DataTypes, Model } from "sequelize";
-import db from "./index";
-import User from "./user";
+import { DataTypes, Model, Sequelize } from "sequelize";
 import { EmployeeAttributes, EmployeeCreationAttributes } from "../types/models";
 
-class Employee extends Model<EmployeeAttributes, EmployeeCreationAttributes>
+export class Employee extends Model<EmployeeAttributes, EmployeeCreationAttributes>
   implements EmployeeAttributes {
   public id!: number;
   public userId!: number;
@@ -12,62 +10,58 @@ class Employee extends Model<EmployeeAttributes, EmployeeCreationAttributes>
   public isAdmin!: boolean;
   public creditor!: number;
   public debit!: number;
+
+  static associate(models: any) {
+    Employee.belongsTo(models.User, { foreignKey: "userId", as: "user" });
+    models.User.hasOne(Employee, { foreignKey: "userId", as: "employee" });
+  }
 }
 
-Employee.init(
-  {
-    id: {
-      type: DataTypes.INTEGER.UNSIGNED,
-      autoIncrement: true,
-      primaryKey: true,
-    },
-    userId: {
-      type: DataTypes.INTEGER.UNSIGNED,
-      allowNull: false,
-      references: {
-        model: User,
-        key: "id",
+export default (sequelize: Sequelize) => {
+  Employee.init(
+    {
+      id: {
+        type: DataTypes.INTEGER.UNSIGNED,
+        autoIncrement: true,
+        primaryKey: true,
       },
-      onDelete: "CASCADE",
-    },
-    rate: {
-      type: DataTypes.FLOAT,
-      allowNull: false,
-      defaultValue: 0,
-      validate: {
-        min: 0,
-        max: 5,
+      userId: {
+        type: DataTypes.INTEGER.UNSIGNED,
+        allowNull: false,
+      },
+      rate: {
+        type: DataTypes.FLOAT,
+        allowNull: false,
+        defaultValue: 0,
+        validate: { min: 0, max: 5 },
+      },
+      isAvailable: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false,
+      },
+      isAdmin: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false,
+      },
+      creditor: {
+        type: DataTypes.FLOAT,
+        allowNull: false,
+        defaultValue: 0,
+      },
+      debit: {
+        type: DataTypes.FLOAT,
+        allowNull: false,
+        defaultValue: 0,
       },
     },
-    isAvailable: {
-      type: DataTypes.BOOLEAN,
-      allowNull: false,
-      defaultValue: false,
-    },
-    isAdmin: {
-      type: DataTypes.BOOLEAN,
-      allowNull: false,
-      defaultValue: false,
-    },
-    creditor: {
-      type: DataTypes.FLOAT,
-      allowNull: false,
-      defaultValue: 0,
-    },
-    debit: {
-      type: DataTypes.FLOAT,
-      allowNull: false,
-      defaultValue: 0,
-    },
-  },
-  {
-    sequelize: db.sequelize!,
-    tableName: "employees",
-    timestamps: false,
-  }
-);
+    {
+      sequelize,
+      tableName: "employees",
+      timestamps: false,
+    }
+  );
 
-Employee.belongsTo(User, { foreignKey: "userId", as: "user" });
-User.hasOne(Employee, { foreignKey: "userId", as: "employee" });
-
-export default Employee;
+  return Employee;
+};

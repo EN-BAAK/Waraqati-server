@@ -1,5 +1,5 @@
-import Client from "../models/client";
-import User from "../models/user";
+import { Client } from "../models/client";
+import { User } from "../models/user";
 import { ClientCreationAttributes } from "../types/models";
 
 export const getClients = async (page: number, limit: number) => {
@@ -31,7 +31,7 @@ export const getClients = async (page: number, limit: number) => {
   return { count, rows: data };
 };
 
-export const getClientById = async (id: number) => {
+export const getClientByUserId = async (id: number) => {
   const client = await Client.findByPk(id, {
     attributes: { exclude: ["userId"] },
     include: [
@@ -56,6 +56,6 @@ export const getClientById = async (id: number) => {
 
 export const createClient = async (data: ClientCreationAttributes) => {
   const client = await Client.create(data);
-  const result = getClientById(client.id)
+  const result = getClientByUserId(client.id)
   return result;
 };

@@ -2,8 +2,6 @@ import { Sequelize } from "sequelize";
 import { readdirSync } from "fs";
 import { basename as _basename, join } from "path";
 import configFile from "../config/config";
-import User from "./user";
-import Employee from "./employee";
 
 const basename = _basename(__filename);
 const env = process.env.NODE_ENV || "development";
@@ -37,7 +35,8 @@ readdirSync(__dirname)
       file.indexOf(".test.") === -1
   )
   .forEach((file) => {
-    const model = require(join(__dirname, file)).default;
+    const modelDefiner = require(join(__dirname, file)).default;
+    const model = modelDefiner(sequelize);
     db[model.name] = model;
   });
 
@@ -49,8 +48,5 @@ Object.keys(db).forEach((modelName) => {
 
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
-
-db.User = User;
-db.Employee = Employee
 
 export default db;

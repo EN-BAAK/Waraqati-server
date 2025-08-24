@@ -20,7 +20,7 @@ export const getEmployees = catchAsyncErrors(async (req: Request, res: Response)
 
 export const getEmployeeByUserId = catchAsyncErrors(async (req: Request, res: Response) => {
   const id = parseInt(req.params.userId, 10);
-  const employee = await employeeService.getEmployeeById(id);
+  const employee = await employeeService.getEmployeeByUserId(id);
 
   if (!employee) throw new ErrorHandler("Employee not found", 404);
   return sendSuccessResponse(res, 200, "Employee has been found", { employee });

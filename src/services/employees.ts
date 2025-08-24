@@ -1,5 +1,5 @@
-import Employee from "../models/employee";
-import User from "../models/user";
+import { Employee } from "../models/employee";
+import { User } from "../models/user";
 import { EmployeeCreationAttributes } from "../types/models";
 
 export const getEmployees = async (page: number, limit: number) => {
@@ -31,7 +31,7 @@ export const getEmployees = async (page: number, limit: number) => {
   return { count, rows: data };
 };
 
-export const getEmployeeById = async (id: number) => {
+export const getEmployeeByUserId = async (id: number) => {
   const employee = await Employee.findByPk(id, {
     attributes: { exclude: ["userId"] },
     include: [
@@ -56,6 +56,6 @@ export const getEmployeeById = async (id: number) => {
 
 export const createEmployee = async (data: EmployeeCreationAttributes) => {
   const employee = await Employee.create(data);
-  const result = await getEmployeeById(employee.id)
+  const result = await getEmployeeByUserId(employee.id)
   return result
 };
