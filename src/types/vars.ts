@@ -7,7 +7,8 @@ export enum SEX {
 export enum ROLE {
   CLIENT = "CLIENT",
   EMPLOYEE = "EMPLOYEE",
-  ADMIN = "ADMIN"
+  ADMIN = "ADMIN",
+  MANAGER = "MANAGER"
 }
 
 export type BlacklistedToken = {

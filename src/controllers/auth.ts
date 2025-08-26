@@ -16,7 +16,6 @@ export const login = catchAsyncErrors(async (req: Request, res: Response) => {
     maxAge: parseInt(process.env.COOKIE_EXPIRE_MS!, 10)
   });
 
-  res.status(200).json({ user });
   sendSuccessResponse(res, 200, "Logged in successfully", { user })
 })
 

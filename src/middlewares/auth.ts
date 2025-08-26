@@ -3,10 +3,11 @@ import jwt from 'jsonwebtoken';
 import { ROLE } from '../types/vars';
 import { AuthenticatedRequest } from '../types/requests';
 import ErrorHandler, { catchAsyncErrors } from './error';
-import User from '../models/user';
-import Client from '../models/client';
-import Employee from '../models/employee';
+import { User } from '../models/user';
+import { Client } from '../models/client';
+import { Employee } from '../models/employee';
 import { isBlacklisted } from '../utils/tokenBlacklist';
+import { Manager } from '../models/manager';
 
 export const verifyAuthentication = catchAsyncErrors(
   async (req: AuthenticatedRequest, _: Response, next: NextFunction) => {
@@ -39,6 +40,8 @@ export const verifyAuthentication = catchAsyncErrors(
         Employee.findOne({ where: { userId, isAdmin: false } }).then(Boolean),
       ADMIN: () =>
         Employee.findOne({ where: { userId, isAdmin: true } }).then(Boolean),
+      MANAGER: () =>
+        Manager.findOne({ where: { userId } }).then(Boolean),
     };
 
     for (const role of Object.keys(checks) as ROLE[]) {

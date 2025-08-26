@@ -8,6 +8,8 @@ import { Employee } from "../models/employee";
 import { randomBytes } from "crypto";
 import { PasswordReset } from "../models/passwordReset";
 import { sendResetEmail } from "../utils/mail";
+import { ROLE } from "../types/vars";
+import { Manager } from "../models/manager";
 
 export const createUser = async (userData: UserCreationAttributes) => {
   const user = await User.create(userData);
@@ -37,33 +39,38 @@ export const getImageById = async (id: number) => {
 export const findUserByIdWithRole = async (userId: number) => {
   const user = await User.findByPk(userId);
   if (!user) throw new ErrorHandler("User not found", 404);
+  const checks: Record<ROLE, () => Promise<any>> = {
+    CLIENT: () => Client.findOne({ where: { userId }, include: [{ model: User, as: "user", attributes: { exclude: ["password", "imgUrl"] } }] }),
+    EMPLOYEE: () => Employee.findOne({ where: { userId, isAdmin: false }, include: [{ model: User, as: "user", attributes: { exclude: ["password", "imgUrl"] } }] }),
+    ADMIN: () => Employee.findOne({ where: { userId, isAdmin: true }, include: [{ model: User, as: "user", attributes: { exclude: ["password", "imgUrl"] } }] }),
+    MANAGER: () => Manager.findOne({ where: { userId }, include: [{ model: User, as: "user", attributes: { exclude: ["password", "imgUrl"] } }] }),
+  };
 
-  const client = await Client.findOne({ where: { userId }, include: [{ model: User, as: "user", attributes: { exclude: ["password", "imgUrl"] } }], });
-  if (client) {
-    const json = client.toJSON() as any;
-    return {
-      ...json,
-      id: json.user.id,
-      user: undefined,
-      ...json.user,
-      role: "CLIENT",
-    };
+  let foundRole: ROLE | null = null;
+  let entity: any = null;
+
+  for (const role of Object.keys(checks) as ROLE[]) {
+    entity = await checks[role]();
+    if (entity) {
+      foundRole = role;
+      break;
+    }
   }
 
-  const employee = await Employee.findOne({ where: { userId }, include: [{ model: User, as: "user", attributes: { exclude: ["password", "imgUrl"] } }], });
-  if (employee) {
-    const json = employee.toJSON() as any;
-    return {
-      ...json,
-      id: json.user.id,
-      user: undefined,
-      ...json.user,
-      role: employee.isAdmin ? "ADMIN" : "EMPLOYEE",
-    };
+  if (!foundRole || !entity) {
+    throw new ErrorHandler("User role not found", 404);
   }
 
-  throw new ErrorHandler("Role not found for user", 403);
+  const json = entity.toJSON() as any;
+  return {
+    ...json,
+    id: json.user?.id ?? userId,
+    user: undefined,
+    ...json.user,
+    role: foundRole,
+  };
 };
+
 
 export const cleanOldPasswordResets = async (userId: number) => {
   const now = new Date();
@@ -93,7 +100,6 @@ export const forgotPasswordService = async (email: string) => {
 
   const code = randomBytes(3).toString("hex").toUpperCase();
   const expiresAt = new Date(Date.now() + 15 * 60 * 1000);
-
   await PasswordReset.create({
     userId: user.id,
     code,
@@ -105,7 +111,7 @@ export const forgotPasswordService = async (email: string) => {
   return { message: "Reset code sent to email" };
 };
 
-export const resetPasswordService = async (code: string, newPassword: string) => {
+export const resetForgottenPasswordService = async (code: string, newPassword: string) => {
   const reset = await PasswordReset.findOne({ where: { code, isVerified: false } });
   if (!reset || reset.expiresAt < new Date()) throw new Error("Invalid or expired code");
 

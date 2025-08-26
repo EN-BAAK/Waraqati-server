@@ -116,12 +116,12 @@ export const createEmployee_UserValidation = [
 ];
 
 export const forgotPasswordValidation = [
-  body("email").notEmpty().isEmail().withMessage("Valid email is required"),
+  param("email").notEmpty().isEmail().withMessage("Valid email is required"),
 ];
 
-export const resetPasswordValidation = [
+export const resetForgottenPasswordValidation = [
   body("code").notEmpty().withMessage("Reset code is required"),
-  body("newPassword").notEmpty().isLength({ min: 6 }).withMessage("Password must be at least 6 characters"),
+  body("password").notEmpty().isLength({ min: 6 }).withMessage("Password must be at least 6 characters"),
 ];
 
 export const changePasswordValidation = [

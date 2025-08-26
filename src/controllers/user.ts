@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { changePasswordService, forgotPasswordService, getImageById, resetPasswordService } from "../services/user";
+import { changePasswordService, forgotPasswordService, getImageById, resetForgottenPasswordService } from "../services/user";
 import { catchAsyncErrors } from "../middlewares/error";
 import { sendSuccessResponse } from "../middlewares/success";
 import { AuthenticatedRequest } from "../types/requests";
@@ -11,14 +11,14 @@ export const getUserImage = catchAsyncErrors(async (req: Request, res: Response)
 })
 
 export const forgotPassword = async (req: Request, res: Response) => {
-  const { email } = req.body;
+  const { email } = req.params;
   const result = await forgotPasswordService(email);
   sendSuccessResponse(res, 200, result.message);
 };
 
-export const resetPassword = async (req: Request, res: Response) => {
-  const { code, newPassword } = req.body;
-  const result = await resetPasswordService(code, newPassword);
+export const resetForgottenPassword = async (req: Request, res: Response) => {
+  const { code, password } = req.body;
+  const result = await resetForgottenPasswordService(code, password);
   sendSuccessResponse(res, 200, result.message);
 };
 

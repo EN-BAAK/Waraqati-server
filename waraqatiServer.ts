@@ -9,7 +9,9 @@ dotenv.config()
 import { error } from "./src/middlewares/error";
 import db from "./src/models"
 
-import managerRouter from "./src/routers/manager"
+import managerRouter from "./src/routers/managers"
+import authRouter from "./src/routers/auth"
+import userRouter from "./src/routers/users"
 
 const app = express()
 app.use(cors({
@@ -22,7 +24,9 @@ app.use(cookieParser())
 app.use(express.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 
-app.use("/managers", managerRouter)
+app.use("/api/v0/users", userRouter)
+app.use("/api/v0/managers", managerRouter)
+app.use("/api/v0/auth", authRouter)
 
 app.use(error)
 
