@@ -9,6 +9,6 @@ const router = Router();
 router.get("/verify", verifyAuthentication, verify);
 
 router.post("/login", loginValidation, validationMiddleware, login);
-router.post("/logout", logout);
+router.post("/logout", verifyAuthentication, logout);
 
 export default router;
