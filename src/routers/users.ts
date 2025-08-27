@@ -6,7 +6,7 @@ import { verifyAuthentication } from "../middlewares/auth";
 
 const router = Router();
 
-router.get(":id/image", validateId, validationMiddleware, userController.getUserImage);
+router.get(":id/profile-image", validateId, validationMiddleware, userController.getUserImage);
 router.get("/forgot-password/:email", forgotPasswordValidation, validationMiddleware, userController.forgotPassword);
 
 router.put("/reset-forgotten-password", resetForgottenPasswordValidation, validationMiddleware, userController.resetForgottenPassword);
