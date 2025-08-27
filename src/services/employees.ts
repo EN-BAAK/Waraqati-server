@@ -1,6 +1,7 @@
 import { Employee } from "../models/employee";
 import { User } from "../models/user";
 import { EmployeeCreationAttributes } from "../types/models";
+import { ROLE } from "../types/vars";
 
 export const getEmployees = async (page: number, limit: number) => {
   const offset = (page - 1) * limit;
@@ -24,7 +25,11 @@ export const getEmployees = async (page: number, limit: number) => {
       ...json,
       id: json.user.id,
       user: undefined,
+      userId: undefined,
+      createAt: undefined,
+      updateAt: undefined,
       ...json.user,
+      role: ROLE.EMPLOYEE
     };
   });
 
@@ -50,7 +55,11 @@ export const getEmployeeByUserId = async (id: number) => {
     ...json,
     id: json.user.id,
     user: undefined,
+    userId: undefined,
     ...json.user,
+    createdAt: undefined,
+    updatedAt: undefined,
+    role: ROLE.EMPLOYEE
   };
 };
 

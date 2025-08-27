@@ -4,6 +4,7 @@ import ErrorHandler, { catchAsyncErrors } from "../middlewares/error";
 import * as authService from "../services/auth";
 import { addToBlacklist } from "../utils/tokenBlacklist";
 import { sendSuccessResponse } from "../middlewares/success";
+import { AuthenticatedRequest } from "../types/requests";
 
 export const login = catchAsyncErrors(async (req: Request, res: Response) => {
   const { email, password } = req.body;
@@ -16,18 +17,17 @@ export const login = catchAsyncErrors(async (req: Request, res: Response) => {
     maxAge: parseInt(process.env.COOKIE_EXPIRE_MS!, 10)
   });
 
-  sendSuccessResponse(res, 200, "Logged in successfully", { user })
+  sendSuccessResponse(res, 200, "Logged in successfully", user)
 })
 
-export const verify = catchAsyncErrors(async (req: Request, res: Response) => {
-  const token = req.cookies?.[process.env.COOKIE_NAME!];
-  if (!token) throw new ErrorHandler("Unauthorized: Token not found", 401);
+export const verify = catchAsyncErrors(async (req: AuthenticatedRequest, res: Response) => {
+  const userId = req.id
 
-  const payload = jwt.verify(token, process.env.JWT_SECRET!) as { userId: number };
-  if (!payload?.userId) throw new ErrorHandler("Invalid token", 401);
+  if (!userId)
+    return new ErrorHandler("Internal Server Error", 500)
 
-  const result = await authService.verifyService(payload.userId);
-  sendSuccessResponse(res, 200, "Verified", { result })
+  const result = await authService.verifyService(userId);
+  sendSuccessResponse(res, 200, "Verified", result)
 })
 
 export const logout = catchAsyncErrors(async (req: Request, res: Response) => {

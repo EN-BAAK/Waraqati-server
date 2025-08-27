@@ -1,6 +1,7 @@
 import { Client } from "../models/client";
 import { User } from "../models/user";
 import { ClientCreationAttributes } from "../types/models";
+import { ROLE } from "../types/vars";
 
 export const getClients = async (page: number, limit: number) => {
   const offset = (page - 1) * limit;
@@ -24,11 +25,15 @@ export const getClients = async (page: number, limit: number) => {
       ...json,
       id: json.user.id,
       user: undefined,
+      userId: undefined,
+      createAt: undefined,
+      updateAt: undefined,
       ...json.user,
+      role: ROLE.CLIENT
     };
   });
 
-  return { count, rows: data };
+  return { count, items: data };
 };
 
 export const getClientByUserId = async (id: number) => {
@@ -50,7 +55,11 @@ export const getClientByUserId = async (id: number) => {
     ...json,
     id: json.user.id,
     user: undefined,
+    userId: undefined,
     ...json.user,
+    createdAt: undefined,
+    updatedAt: undefined,
+    role: ROLE.CLIENT
   };
 };
 

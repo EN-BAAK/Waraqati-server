@@ -64,9 +64,12 @@ export const findUserByIdWithRole = async (userId: number) => {
   const json = entity.toJSON() as any;
   return {
     ...json,
-    id: json.user?.id ?? userId,
+    id: json.user.id,
     user: undefined,
+    userId: undefined,
     ...json.user,
+    createdAt: undefined,
+    updatedAt: undefined,
     role: foundRole,
   };
 };

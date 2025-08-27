@@ -14,7 +14,7 @@ export const getEmployees = catchAsyncErrors(async (req: Request, res: Response)
     total: employees.count,
     page,
     pages: Math.ceil(employees.count / limit),
-    data: employees.rows,
+    items: employees.rows,
   })
 })
 
@@ -23,7 +23,7 @@ export const getEmployeeByUserId = catchAsyncErrors(async (req: Request, res: Re
   const employee = await employeeService.getEmployeeByUserId(id);
 
   if (!employee) throw new ErrorHandler("Employee not found", 404);
-  return sendSuccessResponse(res, 200, "Employee has been found", { employee });
+  return sendSuccessResponse(res, 200, "Employee has been found", employee);
 })
 
 export const createEmployee = catchAsyncErrors(async (req: Request, res: Response) => {
@@ -32,5 +32,5 @@ export const createEmployee = catchAsyncErrors(async (req: Request, res: Respons
   const newUser = await userService.createUser(user);
   const newEmployee = await employeeService.createEmployee({ ...employee, userId: newUser.id });
 
-  return sendSuccessResponse(res, 201, "Employee created successfully", { employee: newEmployee });
+  return sendSuccessResponse(res, 201, "Employee created successfully", newEmployee);
 });

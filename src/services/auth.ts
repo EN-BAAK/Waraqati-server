@@ -5,13 +5,11 @@ import { findUserByIdWithRole } from "./user";
 
 export const loginService = async (email: string, password: string) => {
   const user = await User.findOne({ where: { email } });
-  console.log(1)
   if (!user) throw new ErrorHandler("Invalid email or password", 401);
-console.log(2)
+
   const isMatch = await user.checkPassword(password);
-  console.log(3)
   if (!isMatch) throw new ErrorHandler("Invalid email or password", 401);
-console.log(4)
+
   const userInfo = await findUserByIdWithRole(user.id);
 
   const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET!, {
@@ -23,6 +21,6 @@ console.log(4)
 
 export const verifyService = async (userId: number) => {
   const userInfo = await findUserByIdWithRole(userId);
-  return { message: "verified", user: userInfo };
+  return { ...userInfo };
 };
 

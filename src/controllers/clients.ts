@@ -14,7 +14,7 @@ export const getClients = catchAsyncErrors(async (req: Request, res: Response) =
       total: clients.count,
       page,
       pages: Math.ceil(clients.count / limit),
-      data: clients.rows,
+      items: clients.items,
     }
   )
 })
@@ -24,7 +24,7 @@ export const getClientByUserId = catchAsyncErrors(async (req: Request, res: Resp
   const client = await clientService.getClientByUserId(id);
 
   if (!client) throw new ErrorHandler("Client not found", 404);
-  return sendSuccessResponse(res, 200, "Client has been found", { client });
+  return sendSuccessResponse(res, 200, "Client has been found", client);
 })
 
 export const createClient = catchAsyncErrors(async (req: Request, res: Response) => {
@@ -33,5 +33,5 @@ export const createClient = catchAsyncErrors(async (req: Request, res: Response)
   const newUser = await userService.createUser(user);
   const newClient = await clientService.createClient({ ...client, userId: newUser.id });
 
-  return sendSuccessResponse(res, 201, "Client created successfully", { client: newClient });
+  return sendSuccessResponse(res, 201, "Client created successfully", newClient);
 });
