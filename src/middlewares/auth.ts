@@ -10,13 +10,19 @@ import { isBlacklisted } from '../utils/tokenBlacklist';
 import { Manager } from '../models/manager';
 
 export const verifyAuthentication = catchAsyncErrors(
-  async (req: AuthenticatedRequest, _: Response, next: NextFunction) => {
+  async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     const token = req.cookies?.[process.env.COOKIE_NAME!];
 
     if (!token)
       return next(new ErrorHandler('Unauthorized: Token not found', 401));
 
     if (isBlacklisted(token)) {
+
+      res.clearCookie(process.env.COOKIE_NAME!, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+      });
       return next(new ErrorHandler("Unauthorized: Token expired", 401));
     }
 
@@ -26,8 +32,14 @@ export const verifyAuthentication = catchAsyncErrors(
     ) as { userId: number };
 
     const user = await User.findByPk(payload.userId, { attributes: ['id'] });
-    if (!user)
+    if (!user) {
+      res.clearCookie(process.env.COOKIE_NAME!, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+      });
       return next(new ErrorHandler('User not found', 401));
+    }
 
     const userId = user.id;
 
