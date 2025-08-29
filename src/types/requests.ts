@@ -5,3 +5,11 @@ export interface AuthenticatedRequest extends Request {
   id?: number,
   role?: ROLE;
 }
+
+export interface MulterFiles {
+  [fieldname: string]: Express.Multer.File[];
+}
+
+export interface MulterRequest extends Request {
+  files?: MulterFiles | Express.Multer.File[];
+}

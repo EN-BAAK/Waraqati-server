@@ -29,7 +29,7 @@ export const getEmployeeByUserId = catchAsyncErrors(async (req: Request, res: Re
 export const createEmployee = catchAsyncErrors(async (req: Request, res: Response) => {
   const { user, employee } = req.body;
 
-  const newUser = await userService.createUser(user);
+  const newUser = await userService.createUser(user, req);
   const newEmployee = await employeeService.createEmployee({ ...employee, userId: newUser.id });
 
   return sendSuccessResponse(res, 201, "Employee created successfully", newEmployee);

@@ -58,3 +58,14 @@ export interface ManagerAttributes {
   id: number;
   userId: number;
 }
+
+export interface UnverifiedUserAttributes {
+  id: number;
+  userId: number;
+  code: string;
+  expire: Date;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
+export interface UnverifiedUserCreationAttributes extends Omit<UnverifiedUserAttributes, "id" | "createdAt" | "updatedAt"> { }

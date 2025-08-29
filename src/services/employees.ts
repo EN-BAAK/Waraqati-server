@@ -1,7 +1,9 @@
+import ErrorHandler from "../middlewares/error";
 import { Employee } from "../models/employee";
 import { User } from "../models/user";
 import { EmployeeCreationAttributes } from "../types/models";
 import { ROLE } from "../types/vars";
+import { sendAccountVerificationMessage } from "./auth";
 
 export const getEmployees = async (page: number, limit: number) => {
   const offset = (page - 1) * limit;
@@ -29,7 +31,8 @@ export const getEmployees = async (page: number, limit: number) => {
       createAt: undefined,
       updateAt: undefined,
       ...json.user,
-      role: ROLE.EMPLOYEE
+      role: ROLE.EMPLOYEE,
+      isVerified: !!json.user.isVerified
     };
   });
 
@@ -59,12 +62,20 @@ export const getEmployeeByUserId = async (id: number) => {
     ...json.user,
     createdAt: undefined,
     updatedAt: undefined,
-    role: ROLE.EMPLOYEE
+    role: ROLE.EMPLOYEE,
+    isVerified: !!json.user.isVerified
   };
 };
 
 export const createEmployee = async (data: EmployeeCreationAttributes) => {
   const employee = await Employee.create(data);
+  const user = await User.findOne({ where: { id: employee.userId } })
+
+  if (!user) {
+    throw new ErrorHandler("Failed to send verify email, try to login to resend it, or delete the account by manager", 400)
+  }
+
+  sendAccountVerificationMessage(user)
   const result = await getEmployeeByUserId(employee.id)
   return result
 };

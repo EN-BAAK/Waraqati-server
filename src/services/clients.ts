@@ -1,7 +1,9 @@
+import ErrorHandler from "../middlewares/error";
 import { Client } from "../models/client";
 import { User } from "../models/user";
 import { ClientCreationAttributes } from "../types/models";
 import { ROLE } from "../types/vars";
+import { sendAccountVerificationMessage } from "./auth";
 
 export const getClients = async (page: number, limit: number) => {
   const offset = (page - 1) * limit;
@@ -29,7 +31,8 @@ export const getClients = async (page: number, limit: number) => {
       createAt: undefined,
       updateAt: undefined,
       ...json.user,
-      role: ROLE.CLIENT
+      role: ROLE.CLIENT,
+      isVerified: !!json.user.isVerified
     };
   });
 
@@ -59,12 +62,20 @@ export const getClientByUserId = async (id: number) => {
     ...json.user,
     createdAt: undefined,
     updatedAt: undefined,
-    role: ROLE.CLIENT
+    role: ROLE.CLIENT,
+    isVerified: !!json.user.isVerified
   };
 };
 
 export const createClient = async (data: ClientCreationAttributes) => {
   const client = await Client.create(data);
+  const user = await User.findOne({ where: { id: client.userId } })
+
+  if (!user) {
+    throw new ErrorHandler("Failed to send verify email, try to login to resend it, or delete the account by manager", 400)
+  }
+
+  sendAccountVerificationMessage(user)
   const result = getClientByUserId(client.id)
   return result;
 };

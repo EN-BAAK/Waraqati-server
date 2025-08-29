@@ -5,13 +5,19 @@ import { UserCreationAttributes } from "../types/models";
 import fs from "fs";
 import { Client } from "../models/client";
 import { Employee } from "../models/employee";
-import { randomBytes } from "crypto";
 import { PasswordReset } from "../models/passwordReset";
-import { sendResetEmail } from "../utils/mail";
+import { resetEmailMessage, sendEmail, verifyAccountMessage } from "../utils/mail";
 import { ROLE } from "../types/vars";
 import { Manager } from "../models/manager";
+import { UnverifiedUser } from "../models/unverifiedUser";
+import { generateVerificationCode } from "../utils/encrypt";
+import { MulterRequest } from "../types/requests";
 
-export const createUser = async (userData: UserCreationAttributes) => {
+export const createUser = async (userData: UserCreationAttributes, req: MulterRequest) => {
+  if (req.files && "profileImage" in req.files) {
+    userData.imgUrl = `/uploads/users/${req.files.profileURL[0].filename}`;
+  }
+
   const user = await User.create(userData);
   return user;
 };
@@ -99,9 +105,22 @@ export const forgotPasswordService = async (email: string) => {
   const user = await User.findOne({ where: { email } });
   if (!user) throw new Error("User not found");
 
+  const unverified = await UnverifiedUser.findOne({ where: { userId: user.id } });
+  if (unverified) {
+    const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+    const code = generateVerificationCode()
+    const msg = verifyAccountMessage(code)
+
+    unverified.code = code
+    unverified.expire = expiresAt
+    await unverified.save()
+    await sendEmail(user.email, msg)
+    throw new ErrorHandler("Please verify your account before resetting the password", 403);
+  }
+
   await cleanOldPasswordResets(user.id);
 
-  const code = randomBytes(3).toString("hex").toUpperCase();
+  const code = generateVerificationCode()
   const expiresAt = new Date(Date.now() + 15 * 60 * 1000);
   await PasswordReset.create({
     userId: user.id,
@@ -109,7 +128,8 @@ export const forgotPasswordService = async (email: string) => {
     expiresAt,
   });
 
-  await sendResetEmail(user.email, code);
+  const msg = resetEmailMessage(code)
+  await sendEmail(user.email, msg);
 
   return { message: "Reset code sent to email" };
 };
