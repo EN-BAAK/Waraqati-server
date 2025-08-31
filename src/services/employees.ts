@@ -1,5 +1,6 @@
 import ErrorHandler from "../middlewares/error";
 import { Employee } from "../models/employee";
+import { UnverifiedUser } from "../models/unverifiedUser";
 import { User } from "../models/user";
 import { EmployeeCreationAttributes } from "../types/models";
 import { ROLE } from "../types/vars";
@@ -15,14 +16,23 @@ export const getEmployees = async (page: number, limit: number) => {
         model: User,
         as: "user",
         attributes: { exclude: ["password", "imgUrl"] },
+        include: [
+          {
+            model: UnverifiedUser,
+            as: "unverified",
+            attributes: ["id"],
+          },
+        ],
       },
     ],
     limit,
     offset,
+    order: [[{ model: User, as: "user" }, "createdAt", "DESC"]],
   });
 
   const data = rows.map((employee) => {
     const json = employee.toJSON() as any;
+
     return {
       ...json,
       id: json.user.id,
@@ -32,7 +42,7 @@ export const getEmployees = async (page: number, limit: number) => {
       updateAt: undefined,
       ...json.user,
       role: ROLE.EMPLOYEE,
-      isVerified: !!json.user.isVerified
+      isVerified: !json.user.unverified,
     };
   });
 

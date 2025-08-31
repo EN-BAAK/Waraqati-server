@@ -20,39 +20,30 @@ const createUserValidation = [
     .isString().withMessage("First name must be a string")
     .trim()
     .escape(),
-
   body("user.middleName")
     .optional()
     .isString().withMessage("Middle name must be a string")
     .trim()
     .escape(),
-
   body("user.lastName")
     .notEmpty().withMessage("Last name is required")
     .isString().withMessage("Last name must be a string")
     .trim()
     .escape(),
-
   body("user.email")
     .notEmpty().withMessage("Email is required")
     .isEmail().withMessage("Email must be valid")
     .normalizeEmail(),
-
   body("user.phone")
     .notEmpty().withMessage("Phone number is required")
     .isString().withMessage("Phone must be a string")
     .trim()
     .escape(),
-
   body("user.identityNumber")
     .notEmpty().withMessage("Identity number is required")
     .isString().withMessage("Identity number must be a string")
     .trim()
     .escape(),
-
-  body("user.password")
-    .notEmpty().withMessage("Password is required")
-    .isLength({ min: 6 }).withMessage("Password must be at least 6 characters")
 ];
 
 const createClientValidation = [

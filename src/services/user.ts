@@ -15,7 +15,7 @@ import { MulterRequest } from "../types/requests";
 
 export const createUser = async (userData: UserCreationAttributes, req: MulterRequest) => {
   if (req.files && "profileImage" in req.files) {
-    userData.imgUrl = `/uploads/users/${req.files.profileURL[0].filename}`;
+    userData.imgUrl = `/uploads/users/${req.files.profileImage[0].filename}`;
   }
 
   const user = await User.create(userData);
