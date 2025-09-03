@@ -9,7 +9,7 @@ export class Manager extends Model<ManagerAttributes> implements ManagerAttribut
   public readonly updatedAt!: Date;
 
   static associate(models: any) {
-    Manager.belongsTo(models.User, { foreignKey: "userId", as: "user" });
+    Manager.belongsTo(models.User, { foreignKey: "userId", as: "user", onDelete: "CASCADE" });
     models.User.hasOne(Manager, { foreignKey: "userId", as: "manager" });
   }
 }

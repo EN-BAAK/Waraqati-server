@@ -44,3 +44,14 @@ export const createEmployee = catchAsyncErrors(async (req: Request, res: Respons
 
   return sendSuccessResponse(res, 201, "Employee created successfully", newEmployee);
 });
+
+export const updateEmployee = catchAsyncErrors(
+  async (req: Request, res: Response) => {
+    const userId = parseInt(req.params.userId, 10);
+    const parse = unflatten(req.body);
+    const { user: userData, employee: employeeData } = parse;
+
+    const updatedEmployee = await employeeService.updateEmployee(userId, userData || {}, employeeData || {}, req);
+    return sendSuccessResponse(res, 200, "Employee updated successfully", updatedEmployee);
+  }
+);

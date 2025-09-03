@@ -17,7 +17,7 @@ export class Client extends Model<ClientAttributes, ClientCreationAttributes>
   public readonly updatedAt!: Date;
 
   static associate(models: any) {
-    Client.belongsTo(models.User, { foreignKey: "userId", as: "user" });
+    Client.belongsTo(models.User, { foreignKey: "userId", as: "user", onDelete: "CASCADE" });
     models.User.hasOne(Client, { foreignKey: "userId", as: "client" });
   }
 }

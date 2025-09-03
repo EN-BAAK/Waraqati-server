@@ -3,8 +3,10 @@ import { Employee } from "../models/employee";
 import { UnverifiedUser } from "../models/unverifiedUser";
 import { User } from "../models/user";
 import { EmployeeCreationAttributes } from "../types/models";
+import { MulterRequest } from "../types/requests";
 import { ROLE } from "../types/vars";
 import { sendAccountVerificationMessage } from "./auth";
+import { updateUser } from "./user";
 
 export const getEmployees = async (page: number, limit: number) => {
   const offset = (page - 1) * limit;
@@ -38,10 +40,11 @@ export const getEmployees = async (page: number, limit: number) => {
       id: json.user.id,
       user: undefined,
       userId: undefined,
-      createAt: undefined,
-      updateAt: undefined,
+      createdAt: undefined,
+      updatedAt: undefined,
       ...json.user,
       role: ROLE.EMPLOYEE,
+      unverified: undefined,
       isVerified: !json.user.unverified,
     };
   });
@@ -50,13 +53,21 @@ export const getEmployees = async (page: number, limit: number) => {
 };
 
 export const getEmployeeByUserId = async (id: number) => {
-  const employee = await Employee.findByPk(id, {
+  const employee = await Employee.findOne({
+    where: { userId: id },
     attributes: { exclude: ["userId"] },
     include: [
       {
         model: User,
         as: "user",
         attributes: { exclude: ["password", "imgUrl"] },
+        include: [
+          {
+            model: UnverifiedUser,
+            as: "unverified",
+            attributes: ["id"],
+          },
+        ],
       },
     ],
   });
@@ -73,7 +84,8 @@ export const getEmployeeByUserId = async (id: number) => {
     createdAt: undefined,
     updatedAt: undefined,
     role: ROLE.EMPLOYEE,
-    isVerified: !!json.user.isVerified
+    unverified: undefined,
+    isVerified: !json.user.unverified,
   };
 };
 
@@ -85,7 +97,31 @@ export const createEmployee = async (data: EmployeeCreationAttributes) => {
     throw new ErrorHandler("Failed to send verify email, try to login to resend it, or delete the account by manager", 400)
   }
 
-  sendAccountVerificationMessage(user)
-  const result = await getEmployeeByUserId(employee.id)
+  await sendAccountVerificationMessage(user)
+  const result = await getEmployeeByUserId(user.id)
   return result
+};
+
+export const updateEmployee = async (
+  userId: number,
+  userData: Partial<any>,
+  employeeData: Partial<any>,
+  req: MulterRequest
+) => {
+  await updateUser(userId, userData, req);
+
+  const employee = await Employee.findOne({ where: { userId } });
+  if (!employee) throw new ErrorHandler("Employee not found", 404);
+
+  const updatableFields: (keyof Employee)[] = ["rate", "isAvailable", "isAdmin", "creditor", "debit"];
+  (updatableFields as (keyof Employee)[]).forEach((field) => {
+    if (field in employeeData && employeeData[field] !== undefined) {
+      (employee as any)[field] = employeeData[field];
+    }
+  });
+
+  await employee.save();
+
+  const { getEmployeeByUserId } = require("./employees");
+  return getEmployeeByUserId(userId);
 };

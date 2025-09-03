@@ -12,7 +12,7 @@ export class Employee extends Model<EmployeeAttributes, EmployeeCreationAttribut
   public debit!: number;
 
   static associate(models: any) {
-    Employee.belongsTo(models.User, { foreignKey: "userId", as: "user" });
+    Employee.belongsTo(models.User, { foreignKey: "userId", as: "user", onDelete: "CASCADE" });
     models.User.hasOne(Employee, { foreignKey: "userId", as: "employee" });
   }
 }

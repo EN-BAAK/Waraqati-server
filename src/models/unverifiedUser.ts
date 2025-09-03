@@ -13,7 +13,7 @@ export class UnverifiedUser
   public readonly updatedAt!: Date;
 
   static associate(models: any) {
-    UnverifiedUser.belongsTo(models.User, { foreignKey: "userId", as: "user" });
+    UnverifiedUser.belongsTo(models.User, { foreignKey: "userId", as: "user", onDelete: "CASCADE" });
     models.User.hasOne(UnverifiedUser, { foreignKey: "userId", as: "unverified" });
   }
 }
@@ -29,8 +29,6 @@ export default (sequelize: Sequelize) => {
       userId: {
         type: DataTypes.INTEGER.UNSIGNED,
         allowNull: false,
-        references: { model: "users", key: "id" },
-        onDelete: "CASCADE",
       },
       code: {
         type: DataTypes.STRING,

@@ -57,10 +57,18 @@ export default (sequelize: Sequelize) => {
         },
         beforeUpdate: async (user: User) => {
           if (user.changed("password")) user.password = await hashPassword(user.password);
+          if (user.imgUrl) {
+            const filePath = path.join(process.cwd(), user.imgUrl);
+            fs.unlink(filePath, (err) => {
+              if (err && err.code !== "ENOENT") {
+                console.error(`Error deleting file ${filePath}:`, err);
+              }
+            });
+          }
         },
         beforeDestroy: async (user: User) => {
           if (user.imgUrl) {
-            const filePath = path.join(__dirname, "../uploads/users", user.imgUrl);
+            const filePath = path.join(process.cwd(), user.imgUrl);
             fs.unlink(filePath, (err) => {
               if (err && err.code !== "ENOENT") {
                 console.error(`Error deleting file ${filePath}:`, err);

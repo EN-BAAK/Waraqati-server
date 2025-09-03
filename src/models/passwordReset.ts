@@ -11,6 +11,11 @@ export class PasswordReset extends Model<PasswordResetAttributes, PasswordCreati
 
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
+
+  static associate(models: any) {
+    PasswordReset.belongsTo(models.User, { foreignKey: "userId", as: "user", onDelete: "CASCADE" });
+    models.User.hasOne(PasswordReset, { foreignKey: "userId", as: "passwordReset" });
+  }
 }
 
 export default (sequelize: Sequelize) => {

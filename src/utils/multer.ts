@@ -1,9 +1,9 @@
 import path from "path"
 import multer from "multer"
 
-const storage = multer.diskStorage({
+const profileStorage = multer.diskStorage({
   destination: (_, __, cb) => {
-    cb(null, "uploads");
+    cb(null, "uploads/users");
 
   },
   filename: (_, file, cb) => {
@@ -13,6 +13,4 @@ const storage = multer.diskStorage({
   }
 });
 
-const upload = multer({ storage });
-
-export default upload;
+export const uploadProfile = multer({ storage: profileStorage });

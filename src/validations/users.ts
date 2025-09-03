@@ -128,3 +128,28 @@ export const changePasswordValidation = [
     .isLength({ min: 6 })
     .withMessage("New password must be at least 6 characters"),
 ];
+
+const updateUserValidation = [
+  body("user.firstName").optional().isString().withMessage("First name must be a string").trim().escape(),
+  body("user.middleName").optional().isString().withMessage("Middle name must be a string").trim().escape(),
+  body("user.lastName").optional().isString().withMessage("Last name must be a string").trim().escape(),
+  body("user.email").optional().isEmail().withMessage("Email must be valid").normalizeEmail(),
+  body("user.phone").optional().isString().withMessage("Phone must be a string").trim().escape(),
+  body("user.identityNumber").optional().isString().withMessage("Identity number must be a string").trim().escape(),
+  body("user.password").optional().isLength({ min: 6 }).withMessage("Password must be at least 6 characters"),
+  body("user.profileImage").optional(),
+];
+
+const updateEmployeeValidation = [
+  body("employee.rate").optional().isFloat({ min: 0, max: 5 }).withMessage("Rate must be between 0 and 5"),
+  body("employee.isAvailable").optional().isBoolean().withMessage("isAvailable must be boolean"),
+  body("employee.isAdmin").optional().isBoolean().withMessage("isAdmin must be boolean"),
+  body("employee.creditor").optional().isFloat({ min: 0 }).withMessage("Creditor must be positive"),
+  body("employee.debit").optional().isFloat({ min: 0 }).withMessage("Debit must be positive"),
+];
+
+export const updateEmployee_UserValidation = [
+  ...validateUserId,
+  ...updateUserValidation,
+  ...updateEmployeeValidation,
+];

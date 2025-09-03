@@ -23,7 +23,7 @@ export const createUser = async (userData: UserCreationAttributes, req: MulterRe
 };
 
 export const getImageById = async (id: number) => {
-  const user = await User.findByPk(id);
+  const user = await User.findByPk(id, { attributes: ["imgUrl"] });
 
   if (!user) {
     throw new ErrorHandler("User not found", 404);
@@ -33,7 +33,7 @@ export const getImageById = async (id: number) => {
     throw new ErrorHandler("User does not have an image", 404);
   }
 
-  const filePath = path.join(__dirname, "../uploads/users", user.imgUrl);
+  const filePath = path.join(process.cwd(), user.imgUrl);
 
   if (!fs.existsSync(filePath)) {
     throw new ErrorHandler("Image not found", 404);
@@ -166,3 +166,41 @@ export const changePasswordService = async (
 
   return { message: "Password changed successfully" };
 };
+
+export const updateUser = async (userId: number, userData: Partial<any>, req: MulterRequest) => {
+  const user = await User.findByPk(userId);
+  if (!user) throw new ErrorHandler("User not found", 404);
+
+  if (req.files && "profileImage" in req.files) {
+    if (user.imgUrl) {
+      const oldPath = path.join(process.cwd(), user.imgUrl);
+      if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
+    }
+    user.imgUrl = `/uploads/users/${req.files.profileImage[0].filename}`;
+  } else if ("profileImage" in userData && userData.profileImage === null) {
+    if (user.imgUrl) {
+      const oldPath = path.join(process.cwd(), user.imgUrl);
+      if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
+    }
+    user.imgUrl = null;
+  }
+
+  const updatableFields = ["firstName", "middleName", "lastName", "email", "phone", "identityNumber"];
+
+  updatableFields.forEach((field) => {
+    if (field in userData && userData[field] !== undefined) {
+      (user as any)[field] = userData[field];
+    }
+  });
+
+  await user.save();
+  return user;
+};
+
+export const deleteUserByIdService = async (userId: number) => {
+  const user = await User.findByPk(userId)
+  if (!user) throw new ErrorHandler("User not found", 404);
+
+  user.destroy()
+  return {message: "User deleted successfully"}
+}
