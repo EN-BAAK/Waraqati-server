@@ -122,6 +122,5 @@ export const updateEmployee = async (
 
   await employee.save();
 
-  const { getEmployeeByUserId } = require("./employees");
   return getEmployeeByUserId(userId);
 };

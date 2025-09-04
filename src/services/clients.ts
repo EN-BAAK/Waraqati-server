@@ -1,9 +1,12 @@
 import ErrorHandler from "../middlewares/error";
 import { Client } from "../models/client";
+import { UnverifiedUser } from "../models/unverifiedUser";
 import { User } from "../models/user";
 import { ClientCreationAttributes } from "../types/models";
+import { MulterRequest } from "../types/requests";
 import { ROLE } from "../types/vars";
 import { sendAccountVerificationMessage } from "./auth";
+import { updateUser } from "./user";
 
 export const getClients = async (page: number, limit: number) => {
   const offset = (page - 1) * limit;
@@ -15,10 +18,18 @@ export const getClients = async (page: number, limit: number) => {
         model: User,
         as: "user",
         attributes: { exclude: ["password", "imgUrl"] },
+        include: [
+          {
+            model: UnverifiedUser,
+            as: "unverified",
+            attributes: ["id"],
+          },
+        ],
       },
     ],
     limit,
     offset,
+    order: [[{ model: User, as: "user" }, "createdAt", "DESC"]],
   });
 
   const data = rows.map((client) => {
@@ -36,17 +47,25 @@ export const getClients = async (page: number, limit: number) => {
     };
   });
 
-  return { count, items: data };
+  return { count, rows: data };
 };
 
 export const getClientByUserId = async (id: number) => {
-  const client = await Client.findByPk(id, {
+  const client = await Client.findOne({
+    where: { userId: id },
     attributes: { exclude: ["userId"] },
     include: [
       {
         model: User,
         as: "user",
         attributes: { exclude: ["password", "imgUrl"] },
+        include: [
+          {
+            model: UnverifiedUser,
+            as: "unverified",
+            attributes: ["id"],
+          },
+        ],
       },
     ],
   });
@@ -63,7 +82,7 @@ export const getClientByUserId = async (id: number) => {
     createdAt: undefined,
     updatedAt: undefined,
     role: ROLE.CLIENT,
-    isVerified: !!json.user.isVerified
+    isVerified: !json.user.unverified,
   };
 };
 
@@ -78,4 +97,27 @@ export const createClient = async (data: ClientCreationAttributes) => {
   sendAccountVerificationMessage(user)
   const result = getClientByUserId(client.id)
   return result;
+};
+
+export const updateClient = async (
+  userId: number,
+  userData: Partial<any>,
+  employeeData: Partial<any>,
+  req: MulterRequest
+) => {
+  await updateUser(userId, userData, req);
+
+  const client = await Client.findOne({ where: { userId } });
+  if (!client) throw new ErrorHandler("Client not found", 404);
+
+  const updatableFields: (keyof Client)[] = ["sex", "country", "age", "creditor", "debit", "isSpecial"];
+  (updatableFields as (keyof Client)[]).forEach((field) => {
+    if (field in employeeData && employeeData[field] !== undefined) {
+      (client as any)[field] = employeeData[field];
+    }
+  });
+
+  await client.save();
+
+  return getClientByUserId(userId);
 };

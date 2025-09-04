@@ -12,6 +12,7 @@ router.get("/", verifyAuthentication, requireRole([ROLE.MANAGER]), validatePagin
 router.get("/:userId", verifyAuthentication, requireRole([ROLE.MANAGER]), validateUserId, validationMiddleware, employeeController.getEmployeeByUserId);
 
 router.post("/", verifyAuthentication, requireRole([ROLE.MANAGER]), uploadProfile.fields([{ name: "profileImage", maxCount: 1 }]), createEmployee_UserValidation, validationMiddleware, employeeController.createEmployee);
+
 router.put("/:userId", verifyAuthentication, requireRole([ROLE.MANAGER]), uploadProfile.fields([{ name: "profileImage", maxCount: 1 }]), updateEmployee_UserValidation, validationMiddleware, employeeController.updateEmployee);
 
 export default router;

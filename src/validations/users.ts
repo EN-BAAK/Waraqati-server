@@ -153,3 +153,18 @@ export const updateEmployee_UserValidation = [
   ...updateUserValidation,
   ...updateEmployeeValidation,
 ];
+
+const updateClientValidation = [
+  body("client.country").optional().isString().withMessage("Country must be a string").trim().escape(),
+  body("client.age").optional().isInt({ min: 18 }).withMessage("Age must be an integer and at least 18"),
+  body("client.sex").optional().isIn(Object.values(SEX)).withMessage(`Sex must be one of: ${Object.values(SEX).join(", ")}`),
+  body("client.creditor").optional().isFloat({ min: 0 }).withMessage("Creditor must be positive"),
+  body("client.debit").optional().isFloat({ min: 0 }).withMessage("Debit must be positive"),
+  body("client.isSpecial").optional().isBoolean().withMessage("isSpecial must be boolean"),
+];
+
+export const updateClient_UserValidation = [
+  ...validateUserId,
+  ...updateUserValidation,
+  ...updateClientValidation,
+];
