@@ -137,7 +137,7 @@ const updateUserValidation = [
   body("user.phone").optional().isString().withMessage("Phone must be a string").trim().escape(),
   body("user.identityNumber").optional().isString().withMessage("Identity number must be a string").trim().escape(),
   body("user.password").optional().isLength({ min: 6 }).withMessage("Password must be at least 6 characters"),
-  body("user.profileImage").optional(),
+  body("user.profileImage").optional({ nullable: true }),
 ];
 
 const updateEmployeeValidation = [
@@ -157,7 +157,7 @@ export const updateEmployee_UserValidation = [
 const updateClientValidation = [
   body("client.country").optional().isString().withMessage("Country must be a string").trim().escape(),
   body("client.age").optional().isInt({ min: 18 }).withMessage("Age must be an integer and at least 18"),
-  body("client.sex").optional().isIn(Object.values(SEX)).withMessage(`Sex must be one of: ${Object.values(SEX).join(", ")}`),
+  body("client.sex").if(body("client").exists()).optional({ nullable: true }).isIn(Object.values(SEX)).withMessage(`Sex must be one of: ${Object.values(SEX).join(", ")}`),
   body("client.creditor").optional().isFloat({ min: 0 }).withMessage("Creditor must be positive"),
   body("client.debit").optional().isFloat({ min: 0 }).withMessage("Debit must be positive"),
   body("client.isSpecial").optional().isBoolean().withMessage("isSpecial must be boolean"),
@@ -168,3 +168,8 @@ export const updateClient_UserValidation = [
   ...updateUserValidation,
   ...updateClientValidation,
 ];
+
+export const updateClientSpecializationValidation = [
+  ...validateUserId,
+  body("isSpecial").exists().withMessage("Is special field is required").isBoolean().withMessage("isSpecial must be a boolean"),
+]

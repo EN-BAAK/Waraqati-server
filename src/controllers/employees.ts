@@ -51,7 +51,10 @@ export const updateEmployee = catchAsyncErrors(
     const parse = unflatten(req.body);
     const { user: userData, employee: employeeData } = parse;
 
-    const updatedEmployee = await employeeService.updateEmployee(userId, userData || {}, employeeData || {}, req);
+    if (userData)
+      await userService.updateUser(userId, userData, req)
+
+    const updatedEmployee = await employeeService.updateEmployee(userId, employeeData || {});
     return sendSuccessResponse(res, 200, "Employee updated successfully", updatedEmployee);
   }
 );

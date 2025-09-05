@@ -1,6 +1,6 @@
 import { Router } from "express";
 import * as clientController from "../controllers/clients";
-import { createClient_UserValidation, updateClient_UserValidation, validatePagination, validateUserId } from "../validations/users";
+import { createClient_UserValidation, updateClient_UserValidation, updateClientSpecializationValidation, validatePagination, validateUserId } from "../validations/users";
 import { validationMiddleware } from "../middlewares/error";
 import { requireRole, verifyAuthentication } from "../middlewares/auth";
 import { ROLE } from "../types/vars";
@@ -14,5 +14,6 @@ router.get("/:userId", verifyAuthentication, requireRole([ROLE.MANAGER]), valida
 router.post("/", verifyAuthentication, requireRole([ROLE.MANAGER]), uploadProfile.fields([{ name: "profileImage", maxCount: 1 }]), createClient_UserValidation, validationMiddleware, clientController.createClient);
 
 router.put("/:userId", verifyAuthentication, requireRole([ROLE.MANAGER]), uploadProfile.fields([{ name: "profileImage", maxCount: 1 }]), updateClient_UserValidation, validationMiddleware, clientController.updateClient);
+router.patch("/:userId", verifyAuthentication, requireRole([ROLE.MANAGER]), updateClientSpecializationValidation, validationMiddleware, clientController.updateClientSpecialization);
 
 export default router;

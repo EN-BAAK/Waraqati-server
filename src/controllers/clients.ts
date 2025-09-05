@@ -45,13 +45,22 @@ export const createClient = catchAsyncErrors(async (req: Request, res: Response)
   return sendSuccessResponse(res, 201, "Client created successfully", newClient);
 });
 
-export const updateClient = catchAsyncErrors(
-  async (req: Request, res: Response) => {
-    const userId = parseInt(req.params.userId, 10);
-    const parse = unflatten(req.body);
-    const { user: userData, client: clientData } = parse;
+export const updateClient = catchAsyncErrors(async (req: Request, res: Response) => {
+  const userId = parseInt(req.params.userId, 10);
+  const parse = unflatten(req.body);
+  const { user: userData, client: clientData } = parse;
 
-    const updatedClient = await clientService.updateClient(userId, userData || {}, clientData || {}, req);
-    return sendSuccessResponse(res, 200, "Client updated successfully", updatedClient);
-  }
-);
+  if (Boolean(userData || req.files?.length))
+    await userService.updateUser(userId, userData, req)
+
+  const updatedClient = await clientService.updateClient(userId, clientData || {});
+  return sendSuccessResponse(res, 200, "Client updated successfully", updatedClient);
+});
+
+export const updateClientSpecialization = catchAsyncErrors(async (req: Request, res: Response) => {
+  const userId = parseInt(req.params.userId, 10)
+  const { isSpecial } = req.body
+
+  const result = await clientService.updateClientSpecialization(userId, isSpecial)
+  return sendSuccessResponse(res, 200, result.message, result.client);
+})

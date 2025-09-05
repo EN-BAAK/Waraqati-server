@@ -55,17 +55,6 @@ export default (sequelize: Sequelize) => {
         beforeCreate: async (user: User) => {
           if (user.password) user.password = await hashPassword(user.password);
         },
-        beforeUpdate: async (user: User) => {
-          if (user.changed("password")) user.password = await hashPassword(user.password);
-          if (user.imgUrl) {
-            const filePath = path.join(process.cwd(), user.imgUrl);
-            fs.unlink(filePath, (err) => {
-              if (err && err.code !== "ENOENT") {
-                console.error(`Error deleting file ${filePath}:`, err);
-              }
-            });
-          }
-        },
         beforeDestroy: async (user: User) => {
           if (user.imgUrl) {
             const filePath = path.join(process.cwd(), user.imgUrl);

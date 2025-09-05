@@ -167,40 +167,56 @@ export const changePasswordService = async (
   return { message: "Password changed successfully" };
 };
 
-export const updateUser = async (userId: number, userData: Partial<any>, req: MulterRequest) => {
+export const updateUser = async (
+  userId: number,
+  userData: Partial<any>,
+  req: MulterRequest,
+) => {
   const user = await User.findByPk(userId);
   if (!user) throw new ErrorHandler("User not found", 404);
 
   if (req.files && "profileImage" in req.files) {
+    console.log(1)
     if (user.imgUrl) {
+      console.log(2)
       const oldPath = path.join(process.cwd(), user.imgUrl);
       if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
     }
+    console.log(3)
     user.imgUrl = `/uploads/users/${req.files.profileImage[0].filename}`;
-  } else if ("profileImage" in userData && userData.profileImage === null) {
+  }
+
+  else if ("profileImage" in userData && userData.profileImage === "null") {
+    console.log(4)
     if (user.imgUrl) {
+      console.log(5)
       const oldPath = path.join(process.cwd(), user.imgUrl);
       if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
     }
+    console.log(6)
     user.imgUrl = null;
   }
 
-  const updatableFields = ["firstName", "middleName", "lastName", "email", "phone", "identityNumber"];
+  console.log(7)
+  if (userData) {
+    const updatableFields = ["firstName", "middleName", "lastName", "email", "phone", "identityNumber"] as const;
 
-  updatableFields.forEach((field) => {
-    if (field in userData && userData[field] !== undefined) {
-      (user as any)[field] = userData[field];
-    }
-  });
+    (updatableFields as readonly (keyof typeof userData)[]).forEach((field) => {
+      if (field in userData && userData[String(field)] !== undefined) {
+        (user as any)[field] = userData[String(field)];
+      }
+    });
+  }
 
   await user.save();
   return user;
 };
+
 
 export const deleteUserByIdService = async (userId: number) => {
   const user = await User.findByPk(userId)
   if (!user) throw new ErrorHandler("User not found", 404);
 
   user.destroy()
-  return {message: "User deleted successfully"}
+  return { message: "User deleted successfully" }
 }

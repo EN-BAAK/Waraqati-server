@@ -3,10 +3,8 @@ import { Client } from "../models/client";
 import { UnverifiedUser } from "../models/unverifiedUser";
 import { User } from "../models/user";
 import { ClientCreationAttributes } from "../types/models";
-import { MulterRequest } from "../types/requests";
 import { ROLE } from "../types/vars";
 import { sendAccountVerificationMessage } from "./auth";
-import { updateUser } from "./user";
 
 export const getClients = async (page: number, limit: number) => {
   const offset = (page - 1) * limit;
@@ -101,12 +99,8 @@ export const createClient = async (data: ClientCreationAttributes) => {
 
 export const updateClient = async (
   userId: number,
-  userData: Partial<any>,
   employeeData: Partial<any>,
-  req: MulterRequest
 ) => {
-  await updateUser(userId, userData, req);
-
   const client = await Client.findOne({ where: { userId } });
   if (!client) throw new ErrorHandler("Client not found", 404);
 
@@ -121,3 +115,18 @@ export const updateClient = async (
 
   return getClientByUserId(userId);
 };
+
+export const updateClientSpecialization = async (
+  userId: number,
+  isSpecial: boolean
+) => {
+  const client = await Client.findOne({ where: { userId } })
+  if (!client) throw new ErrorHandler("Client not found", 404);
+
+  client.isSpecial = isSpecial
+  await client.save()
+
+  const updateClient = await getClientByUserId(userId)
+
+  return { message: "Client updated successfully", client: updateClient }
+}

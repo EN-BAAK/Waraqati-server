@@ -3,10 +3,8 @@ import { Employee } from "../models/employee";
 import { UnverifiedUser } from "../models/unverifiedUser";
 import { User } from "../models/user";
 import { EmployeeCreationAttributes } from "../types/models";
-import { MulterRequest } from "../types/requests";
 import { ROLE } from "../types/vars";
 import { sendAccountVerificationMessage } from "./auth";
-import { updateUser } from "./user";
 
 export const getEmployees = async (page: number, limit: number) => {
   const offset = (page - 1) * limit;
@@ -104,12 +102,8 @@ export const createEmployee = async (data: EmployeeCreationAttributes) => {
 
 export const updateEmployee = async (
   userId: number,
-  userData: Partial<any>,
   employeeData: Partial<any>,
-  req: MulterRequest
 ) => {
-  await updateUser(userId, userData, req);
-
   const employee = await Employee.findOne({ where: { userId } });
   if (!employee) throw new ErrorHandler("Employee not found", 404);
 
