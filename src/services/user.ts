@@ -176,28 +176,21 @@ export const updateUser = async (
   if (!user) throw new ErrorHandler("User not found", 404);
 
   if (req.files && "profileImage" in req.files) {
-    console.log(1)
     if (user.imgUrl) {
-      console.log(2)
       const oldPath = path.join(process.cwd(), user.imgUrl);
       if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
     }
-    console.log(3)
     user.imgUrl = `/uploads/users/${req.files.profileImage[0].filename}`;
   }
 
   else if ("profileImage" in userData && userData.profileImage === "null") {
-    console.log(4)
     if (user.imgUrl) {
-      console.log(5)
       const oldPath = path.join(process.cwd(), user.imgUrl);
       if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
     }
-    console.log(6)
     user.imgUrl = null;
   }
 
-  console.log(7)
   if (userData) {
     const updatableFields = ["firstName", "middleName", "lastName", "email", "phone", "identityNumber"] as const;
 

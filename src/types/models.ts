@@ -1,5 +1,5 @@
 import { Optional } from "sequelize";
-import { SEX } from "./vars";
+import { QUESTION_TYPE, SEX } from "./vars";
 
 export interface UserAttributes {
   id: number;
@@ -69,3 +69,46 @@ export interface UnverifiedUserAttributes {
 }
 
 export interface UnverifiedUserCreationAttributes extends Omit<UnverifiedUserAttributes, "id" | "createdAt" | "updatedAt"> { }
+
+export interface ServiceAttributes {
+  id: number;
+  title: string;
+  description: string;
+  duration: string;
+  price: number;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
+export type ServiceCreationAttributes = Omit<ServiceAttributes, "id" | "createdAt" | "updatedAt">;
+
+export interface ServiceQuestionAttributes {
+  id: number;
+  question: string;
+  type: QUESTION_TYPE;
+  serviceId: number;
+}
+
+export type ServiceQuestionCreationAttributes = Omit<ServiceQuestionAttributes, "id" | "createdAt" | "updatedAt">;
+
+export interface RequiredDocAttributes {
+  id: number;
+  label: string;
+  fileUrl: string;
+}
+
+export type RequiredDocCreationAttributes = Omit<RequiredDocAttributes, "id" | "createdAt" | "updatedAt">;
+
+export interface ServiceRequiredDocsAttributes {
+  serviceId: number;
+  docId: number;
+}
+
+export type ServiceRequiredDocsCreationAttributes = ServiceRequiredDocsAttributes;
+
+export interface ServiceQuestionChoiceAttributes {
+  questionId: number;
+  text: string;
+}
+
+export type ServiceQuestionChoiceCreationAttributes = Omit<ServiceQuestionChoiceAttributes, "createdAt" | "updatedAt">;

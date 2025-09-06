@@ -15,3 +15,9 @@ export type BlacklistedToken = {
   token: string;
   expiresAt: number;
 };
+
+export enum QUESTION_TYPE {
+  Number = "Number",
+  Text = "Text",
+  MultiChoice = "MultiChoice",
+}
