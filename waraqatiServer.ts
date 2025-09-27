@@ -15,6 +15,7 @@ import userRouter from "./src/routers/users"
 import employeeRouter from "./src/routers/employees"
 import clientRouter from "./src/routers/clients"
 import serviceRouter from "./src/routers/service"
+import categoryRouter from "./src/routers/categories"
 
 const app = express()
 app.use(cors({
@@ -32,6 +33,7 @@ app.use("/api/v0/managers", managerRouter)
 app.use("/api/v0/employees", employeeRouter)
 app.use("/api/v0/clients", clientRouter)
 app.use("/api/v0/services", serviceRouter)
+app.use("/api/v0/categories", categoryRouter)
 app.use("/api/v0/auth", authRouter)
 
 app.use(error)

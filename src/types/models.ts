@@ -94,7 +94,6 @@ export type ServiceQuestionCreationAttributes = Omit<ServiceQuestionAttributes, 
 export interface RequiredDocAttributes {
   id: number;
   label: string;
-  fileUrl: string;
 }
 
 export type RequiredDocCreationAttributes = Omit<RequiredDocAttributes, "id" | "createdAt" | "updatedAt">;
@@ -112,3 +111,15 @@ export interface ServiceQuestionChoiceAttributes {
 }
 
 export type ServiceQuestionChoiceCreationAttributes = Omit<ServiceQuestionChoiceAttributes, "createdAt" | "updatedAt">;
+
+export interface CategoryAttributes {
+  id: number;
+  title: string;
+  desc: string;
+  imgUrl?: string | null;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
+export interface CategoryCreationAttributes
+  extends Omit<CategoryAttributes, "id" | "createdAt" | "updatedAt"> { }

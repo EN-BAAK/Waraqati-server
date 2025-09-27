@@ -55,6 +55,11 @@ export default (sequelize: Sequelize) => {
         beforeCreate: async (user: User) => {
           if (user.password) user.password = await hashPassword(user.password);
         },
+        beforeSave: async (user: User) => {
+          if (user.changed("password")) {
+            user.password = await hashPassword(user.password);
+          }
+        },
         beforeDestroy: async (user: User) => {
           if (user.imgUrl) {
             const filePath = path.join(process.cwd(), user.imgUrl);

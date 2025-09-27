@@ -1,5 +1,6 @@
-import { DataTypes, Model, Sequelize } from "sequelize";
+import { BelongsToManySetAssociationsMixin, DataTypes, Model, Sequelize } from "sequelize";
 import { ServiceAttributes, ServiceCreationAttributes } from "../types/models";
+import { RequiredDoc } from "./requiredDocs";
 
 export class Service extends Model<ServiceAttributes, ServiceCreationAttributes>
   implements ServiceAttributes {
@@ -11,6 +12,8 @@ export class Service extends Model<ServiceAttributes, ServiceCreationAttributes>
 
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
+
+  public setRequiredDocs!: BelongsToManySetAssociationsMixin<RequiredDoc, number>;
 
   static associate(models: any) {
     Service.hasMany(models.ServiceQuestion, {
@@ -58,7 +61,6 @@ export default (sequelize: Sequelize) => {
       sequelize,
       tableName: "services",
       timestamps: true,
-
       indexes: [{ name: "title_index", unique: false, fields: ["title"] }],
     }
   );

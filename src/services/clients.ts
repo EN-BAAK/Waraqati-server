@@ -93,7 +93,7 @@ export const createClient = async (data: ClientCreationAttributes) => {
   }
 
   sendAccountVerificationMessage(user)
-  const result = getClientByUserId(client.id)
+  const result = getClientByUserId(user.id)
   return result;
 };
 

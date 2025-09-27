@@ -6,7 +6,6 @@ export class RequiredDoc
   implements RequiredDocAttributes {
   public id!: number;
   public label!: string;
-  public fileUrl!: string;
 
   static associate(models: any) {
     RequiredDoc.belongsToMany(models.Service, {
@@ -31,15 +30,12 @@ export default (sequelize: Sequelize) => {
         type: DataTypes.STRING,
         allowNull: false,
       },
-      fileUrl: {
-        type: DataTypes.STRING,
-        allowNull: false,
-      },
     },
     {
       sequelize,
       tableName: "required_docs",
       timestamps: false,
+      indexes: [{ name: "label_index", unique: false, fields: ["label"] }],
     }
   );
 

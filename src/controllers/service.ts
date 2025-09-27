@@ -27,7 +27,7 @@ export const getServices = catchAsyncErrors(async (req: Request, res: Response) 
 
 export const getServiceById = catchAsyncErrors(async (req: Request, res: Response) => {
   const id = parseInt(req.params.id, 10);
-  const service = await serviceService.getServiceById(id);
+  const service = await serviceService.getDetailedServiceById(id);
 
   return sendSuccessResponse(res, 200, "Service found", service);
 });
@@ -37,4 +37,20 @@ export const deleteService = catchAsyncErrors(async (req: Request, res: Response
   await serviceService.deleteService(id);
 
   return sendSuccessResponse(res, 200, "Service deleted successfully", { id });
+});
+
+export const createService = catchAsyncErrors(async (req: Request, res: Response) => {
+  const body = req.body
+  const service = await serviceService.createService(body);
+
+  return sendSuccessResponse(res, 201, "Service created successfully", service);
+});
+
+export const updateService = catchAsyncErrors(async (req: Request, res: Response) => {
+  const body = req.body
+  const id = parseInt(req.params.id, 10)
+
+  const service = await serviceService.updateService(id, body);
+
+  return sendSuccessResponse(res, 201, "Service updated successfully", service);
 });
