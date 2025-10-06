@@ -17,9 +17,9 @@ router.get("/:id", validateCategoryId, validationMiddleware, categoryController.
 router.get("/", categoryController.getCategories);
 router.get("/:id/image", validateCategoryId, validationMiddleware, categoryController.getCategoryImage);
 
-router.post("/", verifyAuthentication, requireRole([ROLE.MANAGER]), uploadCategoryImage.single("image"), createCategoryValidation, validationMiddleware, categoryController.createCategory);
+router.post("/", verifyAuthentication, requireRole([ROLE.MANAGER]), uploadCategoryImage.fields([{ name: "image", maxCount: 1 }]), createCategoryValidation, validationMiddleware, categoryController.createCategory);
 
-router.put("/:id", verifyAuthentication, requireRole([ROLE.MANAGER]), uploadCategoryImage.single("image"), updateCategoryValidation, validationMiddleware, categoryController.updateCategory);
+router.put("/:id", verifyAuthentication, requireRole([ROLE.MANAGER]), uploadCategoryImage.fields([{ name: "image", maxCount: 1 }]), updateCategoryValidation, validationMiddleware, categoryController.updateCategory);
 
 router.delete("/:id", verifyAuthentication, requireRole([ROLE.MANAGER]), deleteCategoryValidation, validationMiddleware, categoryController.deleteCategory);
 

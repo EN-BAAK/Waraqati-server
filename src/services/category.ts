@@ -7,7 +7,7 @@ import { CategoryCreationAttributes } from "../types/models";
 
 export const getCategoryByIdService = async (id: number) => {
   const category = await Category.findByPk(id, {
-    attributes: ["id", "title", "desc", "createdAt", "updatedAt"],
+    attributes: ["id", "title", "desc"],
   });
   if (!category) throw new ErrorHandler("Category not found", 404);
   return category;
@@ -15,8 +15,8 @@ export const getCategoryByIdService = async (id: number) => {
 
 export const getCategoriesService = async () => {
   return Category.findAll({
-    attributes: ["id", "title", "desc", "createdAt", "updatedAt"],
-    order: [["createdAt", "DESC"]],
+    attributes: ["id", "title", "desc"],
+    order: [["id", "DESC"]],
   });
 };
 
@@ -34,8 +34,8 @@ export const createCategoryService = async (
   data: CategoryCreationAttributes,
   req: MulterRequest
 ) => {
-  if (req.file) {
-    data.imgUrl = `/uploads/categories/${req.file.filename}`;
+  if (req.files && "image" in req.files) {
+    data.imgUrl = `/uploads/categories/${req.files.image[0].filename}`;
   }
 
   const category = await Category.create(data)
@@ -50,12 +50,12 @@ export const updateCategoryService = async (
   const category = await Category.findByPk(id);
   if (!category) throw new ErrorHandler("Category not found", 404);
 
-  if (req.file) {
+  if (req.files && "image" in req.files) {
     if (category.imgUrl) {
       const oldPath = path.join(process.cwd(), category.imgUrl);
       if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
     }
-    category.imgUrl = `/uploads/categories/${req.file.filename}`;
+    category.imgUrl = `/uploads/categories/${req.files.image[0].filename}`;
   } else if ("imgUrl" in data && data.imgUrl === "null") {
     if (category.imgUrl) {
       const oldPath = path.join(process.cwd(), category.imgUrl);

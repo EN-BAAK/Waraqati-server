@@ -9,9 +9,6 @@ export class Category extends Model<CategoryAttributes, CategoryCreationAttribut
   public desc!: string;
   public imgUrl!: string | null;
 
-  public readonly createdAt!: Date;
-  public readonly updatedAt!: Date;
-
   public toJSON(): object {
     const values: Partial<CategoryAttributes> = { ...this.get() };
     return values;
@@ -33,7 +30,7 @@ export default (sequelize: Sequelize) => {
     {
       sequelize,
       tableName: "categories",
-      timestamps: true,
+      timestamps: false,
       indexes: [{ name: "title_index", unique: false, fields: ["title"] }],
       hooks: {
         beforeDestroy: async (category: Category) => {
@@ -47,7 +44,7 @@ export default (sequelize: Sequelize) => {
           }
         },
       },
-    }
+    },
   );
 
   return Category;
