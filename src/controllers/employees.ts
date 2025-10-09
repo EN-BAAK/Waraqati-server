@@ -8,8 +8,9 @@ import { unflatten } from "../utils/global";
 export const getEmployees = catchAsyncErrors(async (req: Request, res: Response) => {
   const page = parseInt(req.query.page as string, 10) || 1;
   const limit = parseInt(req.query.limit as string, 10) || 10;
+  const search = (req.query.search as string) || "";
 
-  const employees = await employeeService.getEmployees(page, limit);
+  const employees = await employeeService.getEmployees(page, limit, search);
 
   const total = employees.count;
   const totalPages = Math.ceil(total / limit);

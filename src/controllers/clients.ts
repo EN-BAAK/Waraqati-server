@@ -8,13 +8,14 @@ import { unflatten } from "../utils/global";
 export const getClients = catchAsyncErrors(async (req: Request, res: Response) => {
   const page = parseInt(req.query.page as string, 10) || 1;
   const limit = parseInt(req.query.limit as string, 10) || 10;
+  const search = (req.query.search as string) || "";
 
-  const clients = await clientService.getClients(page, limit);
+  const clients = await clientService.getClients(page, limit, search);
 
   const total = clients.count;
   const totalPages = Math.ceil(total / limit);
 
-  return sendSuccessResponse(res, 200, "Employees have been found", {
+  return sendSuccessResponse(res, 200, "Clients found successfully", {
     items: clients.rows,
     page,
     limit,
@@ -25,6 +26,7 @@ export const getClients = catchAsyncErrors(async (req: Request, res: Response) =
     prevPage: page > 1 ? page - 1 : null,
   });
 });
+
 
 export const getClientByUserId = catchAsyncErrors(async (req: Request, res: Response) => {
   const id = parseInt(req.params.userId, 10);

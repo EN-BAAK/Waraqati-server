@@ -1,3 +1,4 @@
+import { Op } from "sequelize";
 import ErrorHandler from "../middlewares/error";
 import { Client } from "../models/client";
 import { UnverifiedUser } from "../models/unverifiedUser";
@@ -6,8 +7,22 @@ import { ClientCreationAttributes } from "../types/models";
 import { ROLE } from "../types/vars";
 import { sendAccountVerificationMessage } from "./auth";
 
-export const getClients = async (page: number, limit: number) => {
+export const getClients = async (page: number, limit: number, search?: string) => {
   const offset = (page - 1) * limit;
+
+  const userWhere: any = {};
+  if (search) {
+    userWhere[Op.or] = [
+      { firstName: { [Op.like]: `%${search}%` } },
+      { lastName: { [Op.like]: `%${search}%` } },
+      {
+        [Op.and]: [
+          { firstName: { [Op.like]: `%${search.split(" ")[0]}%` } },
+          { lastName: { [Op.like]: `%${search.split(" ")[1] || ""}%` } },
+        ]
+      }
+    ];
+  }
 
   const { count, rows } = await Client.findAndCountAll({
     attributes: { exclude: ["userId"] },
@@ -15,6 +30,7 @@ export const getClients = async (page: number, limit: number) => {
       {
         model: User,
         as: "user",
+        where: userWhere,
         attributes: { exclude: ["password", "imgUrl"] },
         include: [
           {
@@ -41,7 +57,7 @@ export const getClients = async (page: number, limit: number) => {
       updateAt: undefined,
       ...json.user,
       role: ROLE.CLIENT,
-      isVerified: !!json.user.isVerified
+      isVerified: !!json.user.isVerified,
     };
   });
 

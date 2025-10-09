@@ -1,3 +1,4 @@
+import { Op } from "sequelize";
 import ErrorHandler from "../middlewares/error";
 import { Employee } from "../models/employee";
 import { UnverifiedUser } from "../models/unverifiedUser";
@@ -6,8 +7,22 @@ import { EmployeeCreationAttributes } from "../types/models";
 import { ROLE } from "../types/vars";
 import { sendAccountVerificationMessage } from "./auth";
 
-export const getEmployees = async (page: number, limit: number) => {
+export const getEmployees = async (page: number, limit: number, search?: string) => {
   const offset = (page - 1) * limit;
+
+  const userWhere: any = {};
+  if (search) {
+    userWhere[Op.or] = [
+      { firstName: { [Op.like]: `%${search}%` } },
+      { lastName: { [Op.like]: `%${search}%` } },
+      {
+        [Op.and]: [
+          { firstName: { [Op.like]: `%${search.split(" ")[0]}%` } },
+          { lastName: { [Op.like]: `%${search.split(" ")[1] || ""}%` } },
+        ]
+      }
+    ];
+  }
 
   const { count, rows } = await Employee.findAndCountAll({
     attributes: { exclude: ["userId"] },
@@ -15,6 +30,7 @@ export const getEmployees = async (page: number, limit: number) => {
       {
         model: User,
         as: "user",
+        where: userWhere,
         attributes: { exclude: ["password", "imgUrl"] },
         include: [
           {
