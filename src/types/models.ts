@@ -123,3 +123,15 @@ export interface CategoryAttributes {
 
 export interface CategoryCreationAttributes
   extends Omit<CategoryAttributes, "id" | "createdAt" | "updatedAt"> { }
+
+export interface QuestionAttributes {
+  id: number;
+  question: string;
+  answer: string;
+  categoryId?: number | null;
+  order: number;
+  isActive: boolean
+}
+
+export interface QuestionCreationAttributes
+  extends Omit<QuestionAttributes, "id"> { }
