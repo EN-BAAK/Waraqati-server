@@ -21,3 +21,7 @@ export const updateOrderValidation = [
 export const toggleIsActiveValidation = [
   param("id").isInt({ min: 1 }).withMessage("Question id must be a positive integer"),
 ];
+
+export const getQuestionByIdValidation = [
+  param("id").isInt({ min: 1 }).withMessage("Question id must be a positive integer"),
+];

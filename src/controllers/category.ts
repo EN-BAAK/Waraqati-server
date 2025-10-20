@@ -4,21 +4,22 @@ import { sendSuccessResponse } from "../middlewares/success";
 import {
   createCategoryService,
   deleteCategoryByIdService,
-  getCategoryByIdService,
   getCategoriesService,
   getCategoryImageService,
   updateCategoryService,
+  getCategoryByIdService,
+  getCategoriesIdentifiesService
 } from "../services/category";
 import { MulterRequest } from "../types/requests";
 
-export const getCategory = catchAsyncErrors(async (req: Request, res: Response) => {
-  const id = Number(req.params.id);
-  const category = await getCategoryByIdService(id);
-  sendSuccessResponse(res, 200, "Category fetched successfully", category);
-});
-
 export const getCategories = catchAsyncErrors(async (_: Request, res: Response) => {
   const categories = await getCategoriesService();
+  sendSuccessResponse(res, 200, "Categories fetched successfully", categories);
+});
+
+export const getCategoryById = catchAsyncErrors(async (req: Request, res: Response) => {
+  const id = Number(req.params.id)
+  const categories = await getCategoryByIdService(id);
   sendSuccessResponse(res, 200, "Categories fetched successfully", categories);
 });
 
@@ -43,4 +44,9 @@ export const deleteCategory = catchAsyncErrors(async (req: Request, res: Respons
   const id = Number(req.params.id);
   const result = await deleteCategoryByIdService(id);
   sendSuccessResponse(res, 200, result.message);
+});
+
+export const getCategoriesIdentifies = catchAsyncErrors(async (_: Request, res: Response) => {
+  const categories = await getCategoriesIdentifiesService();
+  sendSuccessResponse(res, 200, "Category identifiers fetched successfully", categories);
 });

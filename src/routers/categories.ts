@@ -13,9 +13,10 @@ import { uploadCategoryImage } from "../utils/multer";
 
 const router = Router();
 
-router.get("/:id", validateCategoryId, validationMiddleware, categoryController.getCategory);
 router.get("/", categoryController.getCategories);
+router.get("/identifies", categoryController.getCategoriesIdentifies);
 router.get("/:id/image", validateCategoryId, validationMiddleware, categoryController.getCategoryImage);
+router.get("/:id", validateCategoryId, validationMiddleware, categoryController.getCategoryById);
 
 router.post("/", verifyAuthentication, requireRole([ROLE.MANAGER]), uploadCategoryImage.fields([{ name: "image", maxCount: 1 }]), createCategoryValidation, validationMiddleware, categoryController.createCategory);
 

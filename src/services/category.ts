@@ -5,18 +5,16 @@ import path from "path";
 import fs from "fs";
 import { CategoryCreationAttributes } from "../types/models";
 
-export const getCategoryByIdService = async (id: number) => {
-  const category = await Category.findByPk(id, {
-    attributes: ["id", "title", "desc"],
-  });
-  if (!category) throw new ErrorHandler("Category not found", 404);
-  return category;
-};
-
 export const getCategoriesService = async () => {
   return Category.findAll({
     attributes: ["id", "title", "desc"],
     order: [["id", "DESC"]],
+  });
+};
+
+export const getCategoryByIdService = async (id: number) => {
+  return Category.findByPk(id, {
+    attributes: ["id", "title", "desc"],
   });
 };
 
@@ -77,4 +75,11 @@ export const deleteCategoryByIdService = async (id: number) => {
 
   await category.destroy();
   return { message: "Category deleted successfully" };
+};
+
+export const getCategoriesIdentifiesService = async () => {
+  return Category.findAll({
+    attributes: ["id", "title"],
+    order: [["id", "ASC"]],
+  });
 };

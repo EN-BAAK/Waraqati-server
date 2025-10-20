@@ -28,7 +28,7 @@ export default (sequelize: Sequelize) => {
       categoryId: { type: DataTypes.INTEGER.UNSIGNED, allowNull: true },
       order: {
         type: DataTypes.INTEGER.UNSIGNED,
-        allowNull: false,
+        allowNull: true,
       },
       isActive: { type: DataTypes.BOOLEAN, defaultValue: true, allowNull: false },
     },

@@ -31,7 +31,7 @@ export default (sequelize: Sequelize) => {
       sequelize,
       tableName: "categories",
       timestamps: false,
-      indexes: [{ name: "title_index", unique: false, fields: ["title"] }],
+      indexes: [{ name: "title_index", unique: true, fields: ["title"] }],
       hooks: {
         beforeDestroy: async (category: Category) => {
           if (category.imgUrl) {

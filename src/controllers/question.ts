@@ -3,12 +3,12 @@ import * as questionService from "../services/question";
 import { catchAsyncErrors } from "../middlewares/error";
 import { sendSuccessResponse } from "../middlewares/success";
 
-export const getAllQuestions = catchAsyncErrors(async (req: Request, res: Response) => {
+export const getAllQuestions = catchAsyncErrors(async (_: Request, res: Response) => {
   const questions = await questionService.getAllQuestions();
   sendSuccessResponse(res, 200, "All questions retrieved", questions);
 });
 
-export const getActiveQuestions = catchAsyncErrors(async (req: Request, res: Response) => {
+export const getActiveQuestions = catchAsyncErrors(async (_: Request, res: Response) => {
   const questions = await questionService.getActiveQuestions();
   sendSuccessResponse(res, 200, "Active questions retrieved", questions);
 });
@@ -19,6 +19,7 @@ export const createQuestion = catchAsyncErrors(async (req: Request, res: Respons
 });
 
 export const updateQuestion = catchAsyncErrors(async (req: Request, res: Response) => {
+  console.log("\n---------------------\n", "Updates", req.body)
   const question = await questionService.updateQuestion(parseInt(req.params.id), req.body);
   sendSuccessResponse(res, 200, "Question updated successfully", question);
 });
@@ -38,3 +39,9 @@ export const toggleIsActive = catchAsyncErrors(async (req: Request, res: Respons
   const question = await questionService.toggleIsActive(parseInt(req.params.id));
   sendSuccessResponse(res, 200, "Question isActive toggled", question);
 });
+
+export const getQuestionById = catchAsyncErrors(async (req: Request, res: Response) => {
+  const question = await questionService.getQuestionById(parseInt(req.params.id));
+  sendSuccessResponse(res, 200, "Question retrieved successfully", question);
+});
+
