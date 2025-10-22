@@ -2,9 +2,22 @@ import { query, param, body } from "express-validator";
 import { QUESTION_TYPE } from "../types/vars";
 
 export const validatePagination = [
-  query("page").optional().isInt({ min: 1 }).withMessage("Page must be >= 1"),
-  query("limit").optional().isInt({ min: 1, max: 100 }).withMessage("Limit must be 1–100"),
-  query("title").optional().isString().withMessage("Title should be string")
+  query("page")
+    .optional()
+    .isInt({ min: 1 })
+    .withMessage("Page must be a positive integer"),
+  query("limit")
+    .optional()
+    .isInt({ min: 1 })
+    .withMessage("Limit must be a positive integer"),
+  query("title")
+    .optional()
+    .isString()
+    .withMessage("Title must be a string"),
+  query("category")
+    .optional()
+    .isString()
+    .withMessage("Category title must be a string"),
 ];
 
 export const validateServiceId = [
@@ -29,6 +42,8 @@ export const createServiceValidation = [
   body("price")
     .notEmpty().withMessage("Price is required")
     .isFloat({ min: 0 }).withMessage("Price must be a positive number"),
+
+  body("categoryId").optional().isInt({ min: 1 }).withMessage("CategoryId must be a positive integer"),
 
   body("questions")
     .optional()
@@ -97,6 +112,8 @@ export const updateServiceValidation = [
   body("price")
     .optional()
     .isFloat({ min: 0 }).withMessage("Price must be a positive number"),
+
+  body("categoryId").optional().isInt().withMessage("CategoryId must be an integer"),
 
   body("questions")
     .optional()

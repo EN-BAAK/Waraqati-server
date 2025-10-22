@@ -9,6 +9,7 @@ export class Service extends Model<ServiceAttributes, ServiceCreationAttributes>
   public description!: string;
   public duration!: string;
   public price!: number;
+  public categoryId!: number | null;
 
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
@@ -28,6 +29,12 @@ export class Service extends Model<ServiceAttributes, ServiceCreationAttributes>
       otherKey: "docId",
       as: "requiredDocs",
       onDelete: "CASCADE",
+    });
+
+    Service.belongsTo(models.Category, {
+      foreignKey: "categoryId",
+      as: "category",
+      onDelete: "SET NULL",
     });
   }
 }
@@ -55,6 +62,10 @@ export default (sequelize: Sequelize) => {
       price: {
         type: DataTypes.FLOAT,
         allowNull: false,
+      },
+      categoryId: {
+        type: DataTypes.INTEGER.UNSIGNED,
+        allowNull: true,
       },
     },
     {

@@ -34,21 +34,26 @@ export const updateQuestion = async (id: number, data: any) => {
   const question = await checkQuestionExists(id);
 
   ["question", "answer", "isActive"].forEach((key) => {
-    if (data[key]) (question as any)[key] = data[key];
+    if (data[key] !== undefined) (question as any)[key] = data[key];
   });
 
-  if (data.categoryId) {
-    const category = await checkCategoryExists(data.categoryId);
-
-    if (category)
-      question.categoryId = category.id
-    else
-      question.categoryId = null
+  if (data.categoryId !== undefined) {
+    if (data.categoryId < 0) {
+      question.categoryId = null;
+    } else {
+      const category = await checkCategoryExists(data.categoryId);
+      question.categoryId = category?.id ?? null;
+    }
   }
 
-  const category = await checkCategoryExists(data.categoryId || question.categoryId);
-
   await question.save();
+
+  let categoryTitle = "";
+  if (question.categoryId) {
+    const category = await checkCategoryExists(question.categoryId);
+    categoryTitle = category?.title ?? "";
+  }
+
   return {
     id: question.id,
     question: question.question,
@@ -56,7 +61,7 @@ export const updateQuestion = async (id: number, data: any) => {
     isActive: question.isActive,
     order: question.order,
     categoryId: undefined,
-    category: category?.title ?? ""
+    category: categoryTitle,
   };
 };
 

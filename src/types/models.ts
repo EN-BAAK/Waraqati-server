@@ -76,6 +76,7 @@ export interface ServiceAttributes {
   description: string;
   duration: string;
   price: number;
+  categoryId: number | null,
   createdAt?: Date;
   updatedAt?: Date;
 }

@@ -10,7 +10,7 @@ export const updateQuestionValidation = [
   param("id").isInt({ min: 1 }).withMessage("Question id must be a positive integer"),
   body("question").optional().isString().withMessage("Question must be a string"),
   body("answer").optional().isString().withMessage("Answer must be a string"),
-  body("categoryId").optional().isInt({ min: 1 }).withMessage("CategoryId must be a positive integer"),
+  body("categoryId").optional().isInt().withMessage("CategoryId must be an integer"),
 ];
 
 export const updateOrderValidation = [

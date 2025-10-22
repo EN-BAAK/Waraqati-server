@@ -19,7 +19,6 @@ export const createQuestion = catchAsyncErrors(async (req: Request, res: Respons
 });
 
 export const updateQuestion = catchAsyncErrors(async (req: Request, res: Response) => {
-  console.log("\n---------------------\n", "Updates", req.body)
   const question = await questionService.updateQuestion(parseInt(req.params.id), req.body);
   sendSuccessResponse(res, 200, "Question updated successfully", question);
 });
@@ -37,7 +36,7 @@ export const swapQuestionOrder = catchAsyncErrors(async (req: Request, res: Resp
 
 export const toggleIsActive = catchAsyncErrors(async (req: Request, res: Response) => {
   const question = await questionService.toggleIsActive(parseInt(req.params.id));
-  sendSuccessResponse(res, 200, "Question isActive toggled", question);
+  sendSuccessResponse(res, 200, question.isActive ? "Question activated successfully" : "Question inactivated successfully", question);
 });
 
 export const getQuestionById = catchAsyncErrors(async (req: Request, res: Response) => {

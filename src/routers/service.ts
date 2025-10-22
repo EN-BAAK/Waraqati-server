@@ -6,6 +6,7 @@ import { validationMiddleware } from "../middlewares/error";
 const router = express.Router();
 
 router.get("/", validatePagination, validationMiddleware, serviceController.getServices);
+router.get("/:id/detailed", validateServiceId, validationMiddleware, serviceController.getCategoricServiceById);
 router.get("/:id", validateServiceId, validationMiddleware, serviceController.getServiceById);
 
 router.delete("/:id", validateServiceId, validationMiddleware, serviceController.deleteService);
