@@ -7,8 +7,8 @@ import { ClientCreationAttributes } from "../types/models";
 import { ROLE } from "../types/vars";
 import { sendAccountVerificationMessage } from "./auth";
 
-export const getClients = async (page: number, limit: number, search?: string) => {
-  const offset = (page - 1) * limit;
+export const getClients = async (page: number, limit: number, offsetUnit: number, search?: string) => {
+  const offset = (page - 1) * limit + offsetUnit;
 
   const userWhere: any = {};
   if (search) {
