@@ -17,9 +17,19 @@ export class Service extends Model<ServiceAttributes, ServiceCreationAttributes>
   public setRequiredDocs!: BelongsToManySetAssociationsMixin<RequiredDoc, number>;
 
   static associate(models: any) {
+    models.ServiceQuestion.belongsTo(Service, { foreignKey: "serviceId", as: "service", onDelete: "CASCADE" });
+
     Service.hasMany(models.ServiceQuestion, {
       foreignKey: "serviceId",
       as: "questions",
+      onDelete: "CASCADE",
+    });
+
+    models.RequiredDoc.belongsToMany(Service, {
+      through: "ServiceRequiredDocs",
+      foreignKey: "docId",
+      otherKey: "serviceId",
+      as: "services",
       onDelete: "CASCADE",
     });
 
@@ -30,6 +40,8 @@ export class Service extends Model<ServiceAttributes, ServiceCreationAttributes>
       as: "requiredDocs",
       onDelete: "CASCADE",
     });
+
+    models.Category.hasMany(Service, { foreignKey: "categoryId", as: "services", onDelete: "SET NULL" });
 
     Service.belongsTo(models.Category, {
       foreignKey: "categoryId",

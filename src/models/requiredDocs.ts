@@ -6,16 +6,6 @@ export class RequiredDoc
   implements RequiredDocAttributes {
   public id!: number;
   public label!: string;
-
-  static associate(models: any) {
-    RequiredDoc.belongsToMany(models.Service, {
-      through: "ServiceRequiredDocs",
-      foreignKey: "docId",
-      otherKey: "serviceId",
-      as: "services",
-      onDelete: "CASCADE",
-    });
-  }
 }
 
 export default (sequelize: Sequelize) => {

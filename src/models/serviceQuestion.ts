@@ -9,16 +9,6 @@ export class ServiceQuestion
   public question!: string;
   public type!: QUESTION_TYPE;
   public serviceId!: number;
-
-  static associate(models: any) {
-    ServiceQuestion.belongsTo(models.Service, { foreignKey: "serviceId", as: "service", onDelete: "CASCADE" });
-
-    ServiceQuestion.hasMany(models.ServiceQuestionChoice, {
-      foreignKey: "questionId",
-      as: "choices",
-      onDelete: "CASCADE",
-    });
-  }
 }
 
 export default (sequelize: Sequelize) => {

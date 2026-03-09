@@ -1,6 +1,6 @@
-import { BlacklistedToken } from "../types/vars";
+import { Blacklisted_Token } from "../types/vars";
 
-const tokenBlacklist: BlacklistedToken[] = [];
+const tokenBlacklist: Blacklisted_Token[] = [];
 
 export const addToBlacklist = (token: string, expiresAt: number) => {
   const now = Date.now() / 1000;

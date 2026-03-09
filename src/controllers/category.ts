@@ -1,15 +1,7 @@
 import { Request, Response } from "express";
 import { catchAsyncErrors } from "../middlewares/error";
 import { sendSuccessResponse } from "../middlewares/success";
-import {
-  createCategoryService,
-  deleteCategoryByIdService,
-  getCategoriesService,
-  getCategoryImageService,
-  updateCategoryService,
-  getCategoryByIdService,
-  getCategoriesIdentifiesService
-} from "../services/category";
+import {createCategoryService,deleteCategoryByIdService,getCategoriesService,getCategoryImageService,updateCategoryService,getCategoryByIdService,getCategoriesIdentifiesService} from "../services/category";
 import { MulterRequest } from "../types/requests";
 
 export const getCategories = catchAsyncErrors(async (_: Request, res: Response) => {

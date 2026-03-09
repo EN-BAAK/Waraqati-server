@@ -1,13 +1,17 @@
 import { DataTypes, Model, Sequelize } from "sequelize";
 import { ServiceQuestionChoiceAttributes, ServiceQuestionChoiceCreationAttributes } from "../types/models";
 
-export class ServiceQuestionChoice
-  extends Model<ServiceQuestionChoiceAttributes, ServiceQuestionChoiceCreationAttributes>
-  implements ServiceQuestionChoiceAttributes {
+export class ServiceQuestionChoice extends Model<ServiceQuestionChoiceAttributes, ServiceQuestionChoiceCreationAttributes> implements ServiceQuestionChoiceAttributes {
   public questionId!: number;
   public text!: string;
 
   static associate(models: any) {
+    models.ServiceQuestion.hasMany(ServiceQuestionChoice, {
+      foreignKey: "questionId",
+      as: "choices",
+      onDelete: "CASCADE",
+    });
+
     ServiceQuestionChoice.belongsTo(models.ServiceQuestion, {
       foreignKey: "questionId",
       as: "question",

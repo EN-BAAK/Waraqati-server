@@ -136,3 +136,15 @@ export interface QuestionAttributes {
 
 export interface QuestionCreationAttributes
   extends Omit<QuestionAttributes, "id"> { }
+
+export interface RequestAttributes {
+  id: number;
+  serviceId: number;
+  clientId: number,
+  employeeId: number | null;
+  state: string;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
+export type RequestCreationAttributes = Omit<RequestAttributes, "id" | "createdAt" | "updatedAt">;
