@@ -37,8 +37,8 @@ app.use("/api/v0/employees", employeeRouter)
 app.use("/api/v0/clients", clientRouter)
 app.use("/api/v0/services", serviceRouter)
 app.use("/api/v0/categories", categoryRouter)
-app.use("/api/v0/auth", authRouter)
 app.use("/api/v0/requests", RequestRouter)
+app.use("/api/v0/auth", authRouter)
 
 app.use(error)
 
