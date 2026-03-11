@@ -9,11 +9,11 @@ const router = express.Router();
 
 router.get("/", validatePagination, validationMiddleware, serviceController.getServices);
 router.get("/:id/detailed", validateServiceId, validationMiddleware, serviceController.getCategoricServiceById);
-router.get("/:id", verifyAuthentication, requireRole([ROLE.ADMIN]), validateServiceId, validationMiddleware, serviceController.getServiceById);
+router.get("/:id", verifyAuthentication, requireRole([ROLE.MANAGER]), validateServiceId, validationMiddleware, serviceController.getServiceById);
 
-router.delete("/:id", verifyAuthentication, requireRole([ROLE.ADMIN]), validateServiceId, validationMiddleware, serviceController.deleteService);
+router.delete("/:id", verifyAuthentication, requireRole([ROLE.MANAGER]), validateServiceId, validationMiddleware, serviceController.deleteService);
 
-router.post("/", verifyAuthentication, requireRole([ROLE.ADMIN]), createServiceValidation, validationMiddleware, serviceController.createService);
-router.put("/:id", verifyAuthentication, requireRole([ROLE.ADMIN]), updateServiceValidation, validationMiddleware, serviceController.updateService);
+router.post("/", verifyAuthentication, requireRole([ROLE.MANAGER]), createServiceValidation, validationMiddleware, serviceController.createService);
+router.put("/:id", verifyAuthentication, requireRole([ROLE.MANAGER]), updateServiceValidation, validationMiddleware, serviceController.updateService);
 
 export default router;

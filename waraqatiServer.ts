@@ -17,6 +17,7 @@ import clientRouter from "./src/routers/clients"
 import serviceRouter from "./src/routers/service"
 import categoryRouter from "./src/routers/categories"
 import questionRouter from "./src/routers/question"
+import RequestRouter from "./src/routers/requests"
 
 const app = express()
 app.use(cors({
@@ -37,6 +38,7 @@ app.use("/api/v0/clients", clientRouter)
 app.use("/api/v0/services", serviceRouter)
 app.use("/api/v0/categories", categoryRouter)
 app.use("/api/v0/auth", authRouter)
+app.use("/api/v0/request", RequestRouter)
 
 app.use(error)
 

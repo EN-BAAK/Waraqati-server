@@ -9,14 +9,14 @@ const router = Router();
 
 router.get("/", questionController.getAllQuestions);
 router.get("/active", questionController.getActiveQuestions);
-router.get("/:id", verifyAuthentication, requireRole([ROLE.ADMIN]), getQuestionByIdValidation, validationMiddleware, questionController.getQuestionById);
+router.get("/:id", verifyAuthentication, requireRole([ROLE.MANAGER]), getQuestionByIdValidation, validationMiddleware, questionController.getQuestionById);
 
-router.post("/", verifyAuthentication, requireRole([ROLE.ADMIN]), createQuestionValidation, validationMiddleware, questionController.createQuestion);
+router.post("/", verifyAuthentication, requireRole([ROLE.MANAGER]), createQuestionValidation, validationMiddleware, questionController.createQuestion);
 
-router.put("/swap-order", verifyAuthentication, requireRole([ROLE.ADMIN]), updateOrderValidation, validationMiddleware, questionController.swapQuestionOrder);
-router.put("/:id", verifyAuthentication, requireRole([ROLE.ADMIN]), updateQuestionValidation, validationMiddleware, questionController.updateQuestion);
-router.put("/:id/toggle", verifyAuthentication, requireRole([ROLE.ADMIN]), toggleIsActiveValidation, validationMiddleware, questionController.toggleIsActive);
+router.put("/swap-order", verifyAuthentication, requireRole([ROLE.MANAGER]), updateOrderValidation, validationMiddleware, questionController.swapQuestionOrder);
+router.put("/:id", verifyAuthentication, requireRole([ROLE.MANAGER]), updateQuestionValidation, validationMiddleware, questionController.updateQuestion);
+router.put("/:id/toggle", verifyAuthentication, requireRole([ROLE.MANAGER]), toggleIsActiveValidation, validationMiddleware, questionController.toggleIsActive);
 
-router.delete("/:id", verifyAuthentication, requireRole([ROLE.ADMIN]), updateQuestionValidation, validationMiddleware, questionController.deleteQuestion);
+router.delete("/:id", verifyAuthentication, requireRole([ROLE.MANAGER]), updateQuestionValidation, validationMiddleware, questionController.deleteQuestion);
 
 export default router;
