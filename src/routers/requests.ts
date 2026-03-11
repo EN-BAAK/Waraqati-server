@@ -2,11 +2,12 @@ import { Router } from "express";
 import { createRequest, workOnDemand, finishRequest, cancelRequest } from "../controllers/request";
 import { validationMiddleware } from "../middlewares/error";
 import { RequestId, ServiceIdParam, } from "../validations/request";
-import { verifyAuthentication } from "../middlewares/auth";
+import { requireRole, verifyAuthentication } from "../middlewares/auth";
+import { ROLE } from "../types/vars";
 
 const router = Router();
 
-router.post("/:serviceId", verifyAuthentication, ServiceIdParam, validationMiddleware, createRequest);
+router.post("/:serviceId", verifyAuthentication, requireRole([ROLE.CLIENT]), ServiceIdParam, validationMiddleware, createRequest);
 
 router.put("/:id/work", RequestId, validationMiddleware, workOnDemand);
 router.put("/:id/finish", RequestId, validationMiddleware, finishRequest);

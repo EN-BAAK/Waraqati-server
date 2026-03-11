@@ -10,6 +10,7 @@ import {
 import { AuthenticatedRequest } from "../types/requests";
 
 export const createRequest = catchAsyncErrors(async (req: AuthenticatedRequest, res: Response) => {
+  console.log("Entered")
   const serviceId = parseInt(req.params.serviceId);
   const clientId = req.id!
   const request = await createRequestService(serviceId, clientId);
