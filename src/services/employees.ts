@@ -59,7 +59,7 @@ export const getEmployees = async (page: number, limit: number, offsetUnit: numb
       ...json.user,
       role: ROLE.EMPLOYEE,
       unverified: undefined,
-      isVerified: !json.user.unverified,
+      isVerified: json.user.unverified === null,
     };
   });
 

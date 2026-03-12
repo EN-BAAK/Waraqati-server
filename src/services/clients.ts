@@ -57,7 +57,8 @@ export const getClients = async (page: number, limit: number, offsetUnit: number
       updateAt: undefined,
       ...json.user,
       role: ROLE.CLIENT,
-      isVerified: !!json.user.isVerified,
+      isVerified: json.user.unverified === null,
+      unverified: undefined,
     };
   });
 
