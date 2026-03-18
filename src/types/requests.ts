@@ -13,3 +13,5 @@ export interface MulterFiles {
 export interface MulterRequest extends Request {
   files?: MulterFiles | Express.Multer.File[];
 }
+
+export interface AuthenticatedMulterRequest extends MulterRequest, AuthenticatedRequest {}

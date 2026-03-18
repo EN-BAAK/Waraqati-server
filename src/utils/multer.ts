@@ -25,5 +25,17 @@ const categoryStorage = multer.diskStorage({
   }
 });
 
+const documentStorage = multer.diskStorage({
+  destination: (_, __, cb) => {
+    cb(null, "uploads/documents");
+  },
+  filename: (_, file, cb) => {
+    const ext = path.extname(file.originalname);
+    const nameWithoutExt = path.basename(file.originalname, ext);
+    cb(null, `${nameWithoutExt}-${Date.now()}-${file.fieldname}${ext}`);
+  }
+});
+
 export const uploadProfile = multer({ storage: profileStorage });
 export const uploadCategoryImage = multer({ storage: categoryStorage });
+export const uploadDocuments = multer({ storage: documentStorage });

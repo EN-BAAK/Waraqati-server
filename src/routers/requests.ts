@@ -1,13 +1,14 @@
 import { Router } from "express";
 import { createRequest, workOnDemand, finishRequest, cancelRequest } from "../controllers/request";
 import { validationMiddleware } from "../middlewares/error";
-import { RequestId, ServiceIdParam, } from "../validations/request";
+import { RequestId,} from "../validations/request";
 import { requireRole, verifyAuthentication } from "../middlewares/auth";
 import { ROLE } from "../types/vars";
+import { uploadDocuments } from "../utils/multer";
 
 const router = Router();
 
-router.post("/:serviceId", verifyAuthentication, requireRole([ROLE.CLIENT]), ServiceIdParam, validationMiddleware, createRequest);
+router.post("/:serviceId", verifyAuthentication, requireRole([ROLE.CLIENT]), validationMiddleware, uploadDocuments.array("documentsFiles"), createRequest);
 
 router.put("/:id/work", RequestId, validationMiddleware, workOnDemand);
 router.put("/:id/finish", RequestId, validationMiddleware, finishRequest);

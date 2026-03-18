@@ -148,3 +148,23 @@ export interface RequestAttributes {
 }
 
 export type RequestCreationAttributes = Omit<RequestAttributes, "id" | "createdAt" | "updatedAt">;
+
+export interface QuestionAnswerAttributes {
+  id: number;
+  questionId: number;
+  requestId: number;
+  answer: string;
+}
+
+export type QuestionAnswerCreationAttributes = Omit<QuestionAnswerAttributes, "id">;
+
+export interface ClientDocumentAttributes {
+  id: number;
+  clientId: number;
+  docId: number;
+  url: string;
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
+export type ClientDocumentCreationAttributes = Omit<ClientDocumentAttributes, "id" | "createdAt" | "updatedAt">;

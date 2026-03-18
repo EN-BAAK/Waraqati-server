@@ -1,21 +1,14 @@
 import { Response } from "express";
 import { catchAsyncErrors } from "../middlewares/error";
 import { sendSuccessResponse } from "../middlewares/success";
-import {
-  createRequest as createRequestService,
-  workOnDemand as workOnDemandService,
-  finishRequest as finishRequestService,
-  cancelRequest as cancelRequestService
-} from "../services/requests"
-import { AuthenticatedRequest } from "../types/requests";
+import { createRequest as createRequestService, workOnDemand as workOnDemandService, finishRequest as finishRequestService, cancelRequest as cancelRequestService } from "../services/requests"
+import { AuthenticatedMulterRequest, AuthenticatedRequest } from "../types/requests";
 
-export const createRequest = catchAsyncErrors(async (req: AuthenticatedRequest, res: Response) => {
-  const serviceId = parseInt(req.params.serviceId);
-  const clientId = req.id!
-  const request = await createRequestService(serviceId, clientId);
-
-  return sendSuccessResponse(res, 201, "Request created", request);
-});
+export const createRequest = catchAsyncErrors(
+  async (req: AuthenticatedMulterRequest, res: Response) => {
+    const request = await createRequestService(req);
+    return sendSuccessResponse(res, 201, "Request created", request);
+  });
 
 export const workOnDemand = catchAsyncErrors(async (req: AuthenticatedRequest, res: Response) => {
   const requestId = parseInt(req.params.requestId);
