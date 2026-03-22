@@ -1,11 +1,6 @@
 import { Router } from "express";
 import * as categoryController from "../controllers/category";
-import {
-  createCategoryValidation,
-  updateCategoryValidation,
-  validateCategoryId,
-  deleteCategoryValidation,
-} from "../validations/category";
+import { createCategoryValidation, updateCategoryValidation, validateCategoryId, deleteCategoryValidation, } from "../validations/category";
 import { validationMiddleware } from "../middlewares/error";
 import { verifyAuthentication, requireRole } from "../middlewares/auth";
 import { ROLE } from "../types/vars";

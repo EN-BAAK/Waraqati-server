@@ -204,8 +204,6 @@ export const deleteService = async (id: number) => {
 export const createService = async (data: any) => {
   const { title, description, duration, price, questions, requiredDocs, categoryId } = data;
 
-  const labels = requiredDocs?.map((d: any) => d.label?.trim()).filter(Boolean) || [];
-
   return await db.sequelize!.transaction(async (t) => {
     const service = await Service.create(
       { title, description, duration, price, categoryId: categoryId || null },
@@ -219,37 +217,29 @@ export const createService = async (data: any) => {
       );
 
       if (q.type === QUESTION_TYPE.MultiChoice && Array.isArray(q.choices) && q.choices.length) {
-        const choices = q.choices.map((c: string) => ({ questionId: question.id, text: c }));
+        const choices = q.choices.map((c: string) => ({
+          questionId: question.id,
+          text: c,
+        }));
         await ServiceQuestionChoice.bulkCreate(choices, { transaction: t });
       }
     }
 
-    if (labels.length) {
-      const existingDocs = await RequiredDoc.findAll({
-        where: { label: labels },
-        transaction: t,
-      });
-
-      const existingMap = new Map(existingDocs.map(d => [d.label, d]));
+    if (requiredDocs?.length) {
       const docIds: number[] = [];
 
       for (const rd of requiredDocs) {
-        const label = (typeof rd === "string") ? rd.trim() : rd.label.trim();
-        const state = rd.state ?? "auto";
+        const docId = rd.id;
 
-        if (state === "exists") {
-          const found = existingMap.get(label);
-          if (!found) throw new ErrorHandler(`RequiredDoc "${label}" not found`, 400);
-          docIds.push(found.id);
-        } else {
-          if (existingMap.has(label)) {
-            docIds.push(existingMap.get(label)!.id);
-          } else {
-            const created = await RequiredDoc.create({ label }, { transaction: t });
-            docIds.push(created.id);
-            existingMap.set(label, created);
-          }
+        if (!docId) {
+          throw new ErrorHandler("Each requiredDoc must have id", 400);
         }
+
+        const doc = await RequiredDoc.findByPk(docId, { transaction: t });
+        if (!doc) {
+          throw new ErrorHandler(`RequiredDoc with id ${docId} not found`, 400);
+        }
+        docIds.push(docId);
       }
 
       await (service as any).setRequiredDocs(docIds, { transaction: t });
@@ -297,32 +287,32 @@ export const updateService = async (id: number, data: any) => {
     }
 
     if (data.requiredDocs) {
-      const docIds: number[] = [];
+      const docIdsToAdd: number[] = [];
 
       for (const rd of data.requiredDocs) {
-        const label = rd.label?.trim();
-        const state = rd.state;
+        const { id: docId, state } = rd;
 
-        if (!label || !state) throw new ErrorHandler("Each requiredDoc must have label and state", 400);
+        if (!docId || !state) {
+          throw new ErrorHandler("Each requiredDoc must have id and state", 400);
+        }
 
         if (state === "deleted") {
-          const doc = await RequiredDoc.findOne({ where: { label }, transaction: t });
-          if (doc) await (service as any).removeRequiredDoc(doc, { transaction: t });
+          const doc = await RequiredDoc.findByPk(docId, { transaction: t });
+          if (doc) {
+            await (service as any).removeRequiredDoc(doc, { transaction: t });
+          }
         } else if (state === "new") {
-          const existing = await RequiredDoc.findOne({ where: { label }, transaction: t });
-          if (existing) throw new ErrorHandler(`RequiredDoc "${label}" already exists`, 400);
-          const created = await RequiredDoc.create({ label }, { transaction: t });
-          docIds.push(created.id);
-        } else if (state === "exists") {
-          const existing = await RequiredDoc.findOne({ where: { label }, transaction: t });
-          if (!existing) throw new ErrorHandler(`RequiredDoc "${label}" not found`, 400);
-          docIds.push(existing.id);
+          // فقط نضيف العلاقة
+          docIdsToAdd.push(docId);
         }
+        // state === "exists" → لا نعمل شيء
       }
 
-      if (docIds.length) await (service as any).addRequiredDocs(docIds, { transaction: t });
+      if (docIdsToAdd.length) {
+        await (service as any).addRequiredDocs(docIdsToAdd, { transaction: t });
+      }
     }
-    console.log("end")
+
     return await getCategoricServiceById(service.id, t);
   });
 };

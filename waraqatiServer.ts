@@ -18,6 +18,7 @@ import serviceRouter from "./src/routers/service"
 import categoryRouter from "./src/routers/categories"
 import questionRouter from "./src/routers/question"
 import RequestRouter from "./src/routers/requests"
+import RequiredDocumentsRouter from "./src/routers/requiredDocuments"
 
 const app = express()
 app.use(cors({
@@ -38,6 +39,7 @@ app.use("/api/v0/clients", clientRouter)
 app.use("/api/v0/services", serviceRouter)
 app.use("/api/v0/categories", categoryRouter)
 app.use("/api/v0/requests", RequestRouter)
+app.use("/api/v0/required-documents", RequiredDocumentsRouter)
 app.use("/api/v0/auth", authRouter)
 
 app.use(error)
