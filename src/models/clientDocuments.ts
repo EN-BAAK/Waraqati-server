@@ -14,6 +14,12 @@ export class ClientDocument
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
 
+
+  public toJSON(): object {
+    const values: Partial<ClientDocumentAttributes> = { ...this.get() };
+    return values;
+  }
+
   static associate(models: any) {
     ClientDocument.belongsTo(models.Client, { foreignKey: "clientId", as: "client", onDelete: "CASCADE" });
     models.Client.hasMany(ClientDocument, { foreignKey: "clientId", as: "documents" });
