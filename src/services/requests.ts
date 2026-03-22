@@ -8,6 +8,10 @@ import { Client } from "../models/client";
 import db from "../models";
 import fs from "fs";
 import path from "path";
+import { User } from "../models/user";
+import { Employee } from "../models/employee";
+import { Category } from "../models/category";
+import { Service } from "../models/service";
 
 export const createRequest = async (req: AuthenticatedMulterRequest) => {
   const serviceId = parseInt(req.params.serviceId);
@@ -65,6 +69,73 @@ export const createRequest = async (req: AuthenticatedMulterRequest) => {
 
     throw error;
   }
+};
+
+export const getClientRequests = async (userId: number, page: number, limit: number) => {
+  const client = await Client.findOne({ where: { userId } });
+  if (!client) {
+    throw new Error("Client not found for this user");
+  }
+
+  const clientId = client.id;
+  const offset = (page - 1) * limit;
+
+  const { count, rows } = await Request.findAndCountAll({
+    where: { clientId },
+
+    include: [
+      {
+        model: Service,
+        as: "service",
+        attributes: ["title"],
+        include: [
+          {
+            model: Category,
+            as: "category",
+            attributes: ["title"],
+          },
+        ],
+      },
+      {
+        model: Employee,
+        as: "employee",
+        required: false,
+        include: [
+          {
+            model: User,
+            as: "user",
+            attributes: ["id", "firstName", "lastName"],
+          },
+        ],
+      },
+    ],
+
+    attributes: ["id", "state", "createdAt"],
+
+    limit,
+    offset,
+    order: [["createdAt", "DESC"]],
+  });
+
+  const data = rows.map((request) => {
+    const json = request.toJSON() as any;
+
+    return {
+      id: json.id,
+      service: json.service?.title || null,
+      state: json.state,
+      employee: json.employee?.user
+        ? {
+          id: json.employee.user.id,
+          name: `${json.employee.user.firstName} ${json.employee.user.lastName}`,
+        }
+        : null,
+      category: json.service?.category?.title || null,
+      createdAt: json.createdAt,
+    };
+  });
+
+  return { count, rows: data };
 };
 
 export const workOnDemand = async (requestId: number, employeeId: number) => {
