@@ -41,9 +41,5 @@ export const downloadClientDocument = async (userId: number, docId: number) => {
   });
 
   if (!doc) throw new ErrorHandler("Document not found", 404);
-
-  return path.resolve(
-    process.cwd(),
-    doc.url.replace(/^\/?uploads\//, "")
-  );
+  return path.resolve(process.cwd(), "uploads", "documents", path.basename(doc.url));
 }
