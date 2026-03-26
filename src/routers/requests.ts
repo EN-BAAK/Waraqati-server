@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createRequest, workOnDemand, finishRequest, cancelRequest, getAuthenticatedClientRequests } from "../controllers/request";
+import { createRequest, workOnDemand, finishRequest, cancelRequest, getAuthenticatedClientRequests, getAvailableRequests } from "../controllers/request";
 import { validationMiddleware } from "../middlewares/error";
 import { RequestId, validatePagination, } from "../validations/request";
 import { requireRole, verifyAuthentication } from "../middlewares/auth";
@@ -8,7 +8,8 @@ import { uploadDocuments } from "../utils/multer";
 
 const router = Router();
 
-router.get("/client", verifyAuthentication, requireRole([ROLE.CLIENT]), validatePagination, validationMiddleware, getAuthenticatedClientRequests);
+router.get("/available", verifyAuthentication, requireRole([ROLE.ADMIN, ROLE.EMPLOYEE]), validatePagination, validationMiddleware, getAvailableRequests);
+router.get("/client", verifyAuthentication, requireRole([ROLE.CLIENT, ROLE.ADMIN, ROLE.EMPLOYEE]), validatePagination, validationMiddleware, getAuthenticatedClientRequests);
 router.post("/:serviceId", verifyAuthentication, requireRole([ROLE.CLIENT]), validationMiddleware, uploadDocuments.array("documentsFiles"), createRequest);
 
 router.put("/:id/work", RequestId, validationMiddleware, workOnDemand);

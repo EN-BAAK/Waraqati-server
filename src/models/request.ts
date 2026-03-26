@@ -45,23 +45,19 @@ export default (sequelize: Sequelize) => {
         autoIncrement: true,
         primaryKey: true,
       },
-
       serviceId: {
         type: DataTypes.INTEGER.UNSIGNED,
         allowNull: false,
       },
-
       clientId: {
         type: DataTypes.INTEGER.UNSIGNED,
         allowNull: false,
       },
-
       employeeId: {
         type: DataTypes.INTEGER.UNSIGNED,
         allowNull: true,
         defaultValue: null,
       },
-
       state: {
         type: DataTypes.ENUM("in progress", "canceled", "in queue", "in hold", "reviewed", "finished", "succeed"),
         allowNull: false,
@@ -72,6 +68,7 @@ export default (sequelize: Sequelize) => {
       sequelize,
       tableName: "requests",
       timestamps: true,
+      indexes: [{ name: "request_state_index", unique: true, fields: ["state"] }],
     }
   );
 

@@ -1,5 +1,5 @@
 import { Optional } from "sequelize";
-import { QUESTION_TYPE, SEX } from "./vars";
+import { QUESTION_TYPE, REQUESTS_STATE, SEX } from "./vars";
 
 export interface UserAttributes {
   id: number;
@@ -142,7 +142,7 @@ export interface RequestAttributes {
   serviceId: number;
   clientId: number,
   employeeId: number | null;
-  state: string;
+  state: REQUESTS_STATE;
   createdAt?: Date;
   updatedAt?: Date;
 }
