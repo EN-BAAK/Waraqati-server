@@ -68,7 +68,7 @@ export default (sequelize: Sequelize) => {
       sequelize,
       tableName: "requests",
       timestamps: true,
-      indexes: [{ name: "request_state_index", unique: true, fields: ["state"] }],
+      indexes: [{ name: "request_state_index", fields: ["state"] }],
     }
   );
 

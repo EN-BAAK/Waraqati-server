@@ -54,9 +54,9 @@ export const createRequest = catchAsyncErrors(async (req: AuthenticatedMulterReq
 });
 
 export const workOnDemand = catchAsyncErrors(async (req: AuthenticatedRequest, res: Response) => {
-  const requestId = parseInt(req.params.requestId);
-  const employeeId = req.id!
-  const request = await workOnDemandService(requestId, employeeId);
+  const requestId = parseInt(req.params.id);
+  const userId = req.id!
+  const request = await workOnDemandService(requestId, userId);
 
   return sendSuccessResponse(res, 200, "you received the request", request);
 });

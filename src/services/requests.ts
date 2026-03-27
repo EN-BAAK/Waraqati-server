@@ -13,6 +13,59 @@ import { Employee } from "../models/employee";
 import { Category } from "../models/category";
 import { Service } from "../models/service";
 
+const getRequestForClient = async (requestId: number) => {
+  const request = await Request.findOne({
+    where: { id: requestId },
+    include: [
+      {
+        model: Service,
+        as: "service",
+        attributes: ["title"],
+        include: [
+          {
+            model: Category,
+            as: "category",
+            attributes: ["title"],
+          },
+        ],
+      },
+      {
+        model: Employee,
+        as: "employee",
+        required: false,
+        include: [
+          {
+            model: User,
+            as: "user",
+            attributes: ["id", "firstName", "lastName"],
+          },
+        ],
+      },
+    ],
+
+    attributes: ["id", "state", "createdAt"],
+
+    order: [["createdAt", "DESC"]],
+  });
+
+  if (!request) return null;
+  const json = request.toJSON() as any
+
+  return {
+    id: json.id,
+    service: json.service?.title || null,
+    state: json.state,
+    client: json.client?.user
+      ? {
+        ...json.employee?.user,
+        name: `${json.employee.user.firstName} ${json.employee.user.lastName}`,
+      }
+      : null,
+    category: json.service?.category?.title || null,
+    createdAt: json.createdAt,
+  };
+};
+
 export const getAvailableRequests = async (page: number, limit: number) => {
   const offset = (page - 1) * limit;
 
@@ -127,7 +180,7 @@ export const getClientRequests = async (userId: number, page: number, limit: num
       state: json.state,
       employee: json.employee?.user
         ? {
-          id: json.employee.user.id,
+          ...json.employee.user,
           name: `${json.employee.user.firstName} ${json.employee.user.lastName}`,
         }
         : null,
@@ -183,7 +236,7 @@ export const createRequest = async (req: AuthenticatedMulterRequest) => {
     }
 
     await t.commit();
-    return request;
+    return await getRequestForClient(request.id);
   } catch (error) {
     await t.rollback();
     if (req.files) {
@@ -197,11 +250,14 @@ export const createRequest = async (req: AuthenticatedMulterRequest) => {
   }
 };
 
-export const workOnDemand = async (requestId: number, employeeId: number) => {
+export const workOnDemand = async (requestId: number, userId: number) => {
   const request = await Request.findByPk(requestId);
   if (!request) throw new ErrorHandler("Request not found", 404);
 
-  request.employeeId = employeeId;
+  const employee = await Employee.findOne({ where: { userId } });
+  if (!employee) throw new ErrorHandler("Employee not found", 404);
+
+  request.employeeId = employee.id;
   request.state = REQUESTS_STATE.IN_HOLD;
   await request.save();
 

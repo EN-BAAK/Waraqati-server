@@ -10,9 +10,10 @@ const router = Router();
 
 router.get("/available", verifyAuthentication, requireRole([ROLE.ADMIN, ROLE.EMPLOYEE]), validatePagination, validationMiddleware, getAvailableRequests);
 router.get("/client", verifyAuthentication, requireRole([ROLE.CLIENT, ROLE.ADMIN, ROLE.EMPLOYEE]), validatePagination, validationMiddleware, getAuthenticatedClientRequests);
+
 router.post("/:serviceId", verifyAuthentication, requireRole([ROLE.CLIENT]), validationMiddleware, uploadDocuments.array("documentsFiles"), createRequest);
 
-router.put("/:id/work", RequestId, validationMiddleware, workOnDemand);
+router.put("/:id/work", verifyAuthentication, requireRole([ROLE.EMPLOYEE]), RequestId, validationMiddleware, workOnDemand);
 router.put("/:id/finish", RequestId, validationMiddleware, finishRequest);
 router.put("/:id/cancel", RequestId, validationMiddleware, cancelRequest);
 
