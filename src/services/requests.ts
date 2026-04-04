@@ -76,42 +76,49 @@ const getRequestForClient = async (requestId: number) => {
   };
 };
 
-export const getAvailableRequests = async (page: number, limit: number) => {
+export const getAvailableRequests = async (page: number, limit: number, search?: string, category?: string) => {
   const offset = (page - 1) * limit;
 
+  const where: any = { state: REQUESTS_STATE.IN_QUEUE };
+
+  const include: any[] = [
+    {
+      model: Service,
+      as: "service",
+      attributes: ["title"],
+      ...(search ? { where: { title: { [Op.like]: `%${search}%` } } } : {}),
+      required: !!search || !!category,
+      include: [
+        {
+          model: Category,
+          as: "category",
+          required: !!category,
+          attributes: ["title"],
+          ...(category ? { where: { title: category } } : {}),
+        },
+      ],
+    },
+    {
+      model: Client,
+      as: "client",
+      include: [
+        {
+          model: User,
+          as: "user",
+          attributes: ["id", "firstName", "middleName", "lastName", "phone"],
+        },
+      ],
+    },
+  ];
+
   const { count, rows } = await Request.findAndCountAll({
-    where: { state: REQUESTS_STATE.IN_QUEUE },
-    include: [
-      {
-        model: Service,
-        as: "service",
-        attributes: ["title"],
-        include: [
-          {
-            model: Category,
-            as: "category",
-            attributes: ["title"],
-          },
-        ],
-      },
-      {
-        model: Client,
-        as: "client",
-        include: [
-          {
-            model: User,
-            as: "user",
-            attributes: ["id", "firstName", "middleName", "lastName", "phone"],
-          },
-        ],
-      },
-    ],
-
+    where,
+    include,
     attributes: ["id", "state", "createdAt"],
-
     limit,
     offset,
     order: [["createdAt", "DESC"]],
+    distinct: true,
   });
 
   const data = rows.map((request) => {
@@ -127,6 +134,91 @@ export const getAvailableRequests = async (page: number, limit: number) => {
           name: `${json.client.user.firstName} ${json.client.user.middleName && json.client.user.middleName} ${json.client.user.lastName}`,
         }
         : null,
+      category: json.service?.category?.title || null,
+      createdAt: json.createdAt,
+    };
+  });
+
+  return { count, rows: data };
+};
+
+export const getManagerRequests = async (page: number, limit: number, search?: string, category?: string, state?: string) => {
+  const offset = (page - 1) * limit;
+
+  const where: any = {};
+
+  if (state) {
+    where.state = state;
+  }
+
+  const include: any[] = [
+    {
+      model: Service,
+      as: "service",
+      attributes: ["title"],
+      ...(search ? { where: { title: { [Op.like]: `%${search}%` } } } : {}),
+      required: !!search || !!category,
+      include: [
+        {
+          model: Category,
+          as: "category",
+          required: !!category,
+          attributes: ["title"],
+          ...(category ? { where: { title: category } } : {}),
+        },
+      ],
+    },
+    {
+      model: Client,
+      as: "client",
+      include: [
+        {
+          model: User,
+          as: "user",
+          attributes: ["id", "firstName", "middleName", "lastName", "phone"],
+        },
+      ],
+    },
+    {
+      model: Employee,
+      as: "employee",
+      include: [
+        {
+          model: User,
+          as: "user",
+          attributes: ["id", "firstName", "middleName", "lastName", "phone"],
+        },
+      ],
+    },
+  ];
+
+  const { count, rows } = await Request.findAndCountAll({
+    where,
+    include,
+    attributes: ["id", "state", "createdAt"],
+    limit,
+    offset,
+    order: [["createdAt", "DESC"]],
+    distinct: true,
+  });
+
+  const data = rows.map((request) => {
+    const json = request.toJSON() as any;
+
+    return {
+      id: json.id,
+      service: json.service?.title || null,
+      state: json.state,
+      client: json.client?.user
+        ? {
+          ...json.client?.user,
+          name: `${json.client.user.firstName} ${json.client.user.middleName && json.client.user.middleName} ${json.client.user.lastName}`,
+        }
+        : null,
+      employee: json.employee?.user ? {
+        ...json.employee?.user,
+        name: `${json.employee.user.firstName} ${json.employee.user.middleName && json.employee.user.middleName} ${json.employee.user.lastName}`,
+      } : null,
       category: json.service?.category?.title || null,
       createdAt: json.createdAt,
     };
@@ -361,6 +453,16 @@ export async function cancelRequestTransition(requestId: number, userId: number)
   if (![REQUESTS_STATE.IN_QUEUE, REQUESTS_STATE.IN_HOLD, REQUESTS_STATE.IN_PROGRESS].includes(request.state)) {
     throw new ErrorHandler("Cannot cancel request in current state", 400);
   }
+
+  request.employeeId = null;
+  request.state = REQUESTS_STATE.CANCELED;
+  await request.save();
+  return request;
+}
+
+export async function cancelRequestByManagerTransition(requestId: number) {
+  const request = await Request.findByPk(requestId);
+  if (!request) throw new ErrorHandler("Request not found", 404);
 
   request.employeeId = null;
   request.state = REQUESTS_STATE.CANCELED;

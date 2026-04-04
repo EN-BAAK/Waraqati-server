@@ -7,6 +7,17 @@ export const RequestId = [
     .withMessage("Request ID must be a positive integer"),
 ];
 
+export const validatePagination = [
+  query("page")
+    .optional()
+    .isInt({ min: 1 })
+    .withMessage("Page must be a positive integer"),
+  query("limit")
+    .optional()
+    .isInt({ min: 1 })
+    .withMessage("Limit must be a positive integer"),
+]
+
 export const validateAdminEmployeeTransition = [
   ...RequestId,
   body("state")
@@ -19,19 +30,12 @@ export const validateManagerTransition = [
   ...RequestId,
   body("state")
     .isString()
-    .isIn([REQUESTS_STATE.IN_QUEUE, REQUESTS_STATE.REVIEWED, REQUESTS_STATE.SUCCEED])
+    .isIn([REQUESTS_STATE.IN_QUEUE, REQUESTS_STATE.REVIEWED, REQUESTS_STATE.SUCCEED, REQUESTS_STATE.CANCELED, REQUESTS_STATE.IN_QUEUE])
     .withMessage("Invalid nextState for manager transition"),
 ];
 
-export const EmployeeRequests = [
-  query("page")
-    .optional()
-    .isInt({ min: 1 })
-    .withMessage("Page must be a positive integer"),
-  query("limit")
-    .optional()
-    .isInt({ min: 1 })
-    .withMessage("Limit must be a positive integer"),
+export const FullFilteredRequests = [
+  ...validatePagination,
   query("search")
     .optional()
     .isString()
@@ -52,13 +56,14 @@ export const ServiceIdParam = [
     .withMessage("Service ID must be a positive integer"),
 ];
 
-export const validatePagination = [
-  query("page")
+export const AvailableRequestsValidation = [
+  ...validatePagination,
+  query("search")
     .optional()
-    .isInt({ min: 1 })
-    .withMessage("Page must be a positive integer"),
-  query("limit")
+    .isString()
+    .withMessage("Search must be a string"),
+  query("category")
     .optional()
-    .isInt({ min: 1 })
-    .withMessage("Limit must be a positive integer"),
+    .isString()
+    .withMessage("Category must be a string"),
 ];

@@ -1,15 +1,17 @@
 import { Request, Response } from "express";
 import { catchAsyncErrors } from "../middlewares/error";
 import { sendSuccessResponse } from "../middlewares/success";
-import { createRequest as createRequestService, inHoldTransaction, cancelRequest as cancelRequestService, getClientRequests, getAvailableRequests as getAvailableRequestsService, getEmployeeRequests as getEmployeeRequestsService, cancelRequestTransition, inProgressTransition, finishTransition, reviewOrSucceedTransition, moveToQueueFromCanceled, quittingRequest } from "../services/requests"
+import { createRequest as createRequestService, inHoldTransaction, cancelRequest as cancelRequestService, getClientRequests, getAvailableRequests as getAvailableRequestsService, getEmployeeRequests as getEmployeeRequestsService, cancelRequestTransition, inProgressTransition, finishTransition, reviewOrSucceedTransition, moveToQueueFromCanceled, quittingRequest, getManagerRequests as getManagerRequestsService, cancelRequestByManagerTransition } from "../services/requests"
 import { AuthenticatedMulterRequest, AuthenticatedRequest } from "../types/requests";
 import { REQUESTS_STATE } from "../types/vars";
 
 export const getAvailableRequests = catchAsyncErrors(async (req: Request, res: Response) => {
   const page = parseInt(req.query.page as string, 10) || 1;
   const limit = parseInt(req.query.limit as string, 10) || 10;
+  const search = req.query.search as string | undefined;
+  const category = req.query.category as string | undefined;
 
-  const requests = await getAvailableRequestsService(page, limit);
+  const requests = await getAvailableRequestsService(page, limit, search, category);
 
   const total = requests.count;
   const totalPages = Math.ceil(total / limit);
@@ -74,6 +76,30 @@ export const getEmployeeRequests = catchAsyncErrors(async (req: AuthenticatedReq
   });
 });
 
+export const getManagerRequests = catchAsyncErrors(async (req: AuthenticatedRequest, res: Response) => {
+  const page = parseInt(req.query.page as string, 10) || 1;
+  const limit = parseInt(req.query.limit as string, 10) || 10;
+  const search = req.query.search as string | undefined;
+  const state = req.query.state as string | undefined;
+  const category = req.query.category as string | undefined;
+
+  const requests = await getManagerRequestsService(page, limit, search, category, state);
+
+  const total = requests.count;
+  const totalPages = Math.ceil(total / limit);
+
+  return sendSuccessResponse(res, 200, "Requests found", {
+    items: requests.rows,
+    page,
+    limit,
+    total,
+    totalPages,
+    hasMore: page < totalPages,
+    nextPage: page < totalPages ? page + 1 : null,
+    prevPage: page > 1 ? page - 1 : null,
+  });
+});
+
 export const createRequest = catchAsyncErrors(async (req: AuthenticatedMulterRequest, res: Response) => {
   const request = await createRequestService(req);
   return sendSuccessResponse(res, 201, "Request created", request);
@@ -114,14 +140,17 @@ export const handleManagerTransition = catchAsyncErrors(async (req: Authenticate
 
   let result;
   switch (state) {
-    case "reviewed":
+    case REQUESTS_STATE.REVIEWED:
       result = await reviewOrSucceedTransition(id, state);
       break;
-    case "succeed":
+    case REQUESTS_STATE.SUCCEED:
       result = await reviewOrSucceedTransition(id, state);
       break;
-    case "queue":
+    case REQUESTS_STATE.IN_QUEUE:
       result = await moveToQueueFromCanceled(id);
+      break;
+    case REQUESTS_STATE.CANCELED:
+      result = await cancelRequestByManagerTransition(id);
       break;
     default:
       throw new Error("Invalid next state for manager");
