@@ -13,9 +13,9 @@ export class Request extends Model<RequestAttributes, RequestCreationAttributes>
   public readonly updatedAt!: Date;
 
   static associate(models: any) {
-    models.Client.hasOne(Request, { foreignKey: "clientId", as: "request" });
-    models.Service.hasOne(Request, { foreignKey: "serviceId", as: "request" });
-    models.Employee.hasOne(Request, { foreignKey: "employeeId", as: "request" });
+    models.Client.hasMany(Request, { foreignKey: "clientId", as: "request" });
+    models.Service.hasMany(Request, { foreignKey: "serviceId", as: "request" });
+    models.Employee.hasMany(Request, { foreignKey: "employeeId", as: "request" });
 
     Request.belongsTo(models.Service, {
       foreignKey: "serviceId",

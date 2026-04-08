@@ -168,3 +168,12 @@ export interface ClientDocumentAttributes {
 }
 
 export type ClientDocumentCreationAttributes = Omit<ClientDocumentAttributes, "id" | "createdAt" | "updatedAt">;
+
+export interface RequestRateAttributes {
+  id: number;
+  requestId: number;
+  clientId: number | null;
+  rate: number;
+}
+
+export type RequestRateCreationAttributes = Omit<RequestRateAttributes, "id">;
