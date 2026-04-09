@@ -161,3 +161,7 @@ export const updateServiceValidation = [
     .notEmpty().withMessage("State is required")
     .isIn(["exists", "new", "deleted"]).withMessage("State must be either 'exists', 'new' or 'deleted'"),
 ];
+
+export const validateUserId = [
+  param("userId").isInt({ min: 1 }).withMessage("ID must be a positive integer"),
+];

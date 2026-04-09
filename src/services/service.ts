@@ -1,4 +1,4 @@
-import { Op, Transaction } from "sequelize";
+import { col, fn, literal, Op, Transaction } from "sequelize";
 import { Service } from "../models/service";
 import { ServiceQuestion } from "../models/serviceQuestion";
 import { ServiceQuestionChoice } from "../models/serviceQuestionChoice";
@@ -8,6 +8,9 @@ import db from "../models"
 import { QUESTION_TYPE } from "../types/vars";
 import { Category } from "../models/category";
 import { checkCategoryExists } from "./question";
+import { Request } from "../models/request";
+import { RequestRate } from "../models/requestRate";
+import { Employee } from "../models/employee";
 
 export const getAllServices = async (
   page: number,
@@ -302,10 +305,8 @@ export const updateService = async (id: number, data: any) => {
             await (service as any).removeRequiredDoc(doc, { transaction: t });
           }
         } else if (state === "new") {
-          // فقط نضيف العلاقة
           docIdsToAdd.push(docId);
         }
-        // state === "exists" → لا نعمل شيء
       }
 
       if (docIdsToAdd.length) {
@@ -317,3 +318,96 @@ export const updateService = async (id: number, data: any) => {
   });
 };
 
+export const getLatestServicesByEmployee = async (userId: number) => {
+  const employee = await Employee.findOne({ where: { userId } })
+  if (!employee)
+    throw new ErrorHandler("Employee not exists", 404)
+
+  const rows = await Request.findAll({
+    where: { employeeId: employee.id },
+    attributes: [
+      "serviceId",
+      [fn("MAX", col("Request.createdAt")), "lastWorkedAt"],
+    ],
+    include: [
+      {
+        model: Service,
+        as: "service",
+        attributes: ["id", "title", "description", "price", "duration"],
+        include: [
+          {
+            model: Category,
+            as: "category",
+            attributes: ["title"],
+          },
+        ],
+      },
+    ],
+    group: ["serviceId", "service.id", "service->category.id"],
+    order: [[literal("lastWorkedAt"), "DESC"]],
+    limit: 5,
+    raw: true,
+    nest: true,
+  });
+
+  return rows.map((r: any) => ({
+    id: r.service.id,
+    title: r.service.title,
+    description: r.service.description,
+    price: r.service.price,
+    duration: r.service.duration,
+    category: r.service.category?.title || null,
+  }));
+};
+
+export const getTopRatedServiceByEmployee = async (userId: number) => {
+  const employee = await Employee.findOne({ where: { userId } })
+  if (!employee)
+    throw new ErrorHandler("Employee not exists", 404)
+
+  const rows = await Request.findAll({
+    where: { employeeId: employee.id },
+    attributes: [
+      "serviceId",
+      [fn("AVG", col("rate.rate")), "avgRating"],
+    ],
+    include: [
+      {
+        model: Service,
+        as: "service",
+        attributes: ["id", "title", "description", "price", "duration"],
+        include: [
+          {
+            model: Category,
+            as: "category",
+            attributes: ["title"],
+          },
+        ],
+      },
+      {
+        model: RequestRate,
+        as: "rate",
+        attributes: [],
+        required: false,
+      },
+    ],
+    group: ["serviceId", "service.id", "service->category.id"],
+    order: [[literal("avgRating"), "DESC"]],
+    limit: 1,
+    raw: true,
+    nest: true,
+  });
+
+  if (!rows.length) return null;
+
+  const r: any = rows[0];
+
+  return {
+    id: r.service.id,
+    title: r.service.title,
+    description: r.service.description,
+    price: r.service.price,
+    duration: r.service.duration,
+    category: r.service.category?.title || null,
+  };
+};

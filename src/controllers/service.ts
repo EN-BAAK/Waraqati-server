@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import * as serviceService from "../services/service";
 import { catchAsyncErrors } from "../middlewares/error";
 import { sendSuccessResponse } from "../middlewares/success";
+import { AuthenticatedRequest } from "../types/requests";
 
 export const getServices = catchAsyncErrors(async (req: Request, res: Response) => {
   const page = parseInt(req.query.page as string, 10) || 1;
@@ -62,4 +63,18 @@ export const updateService = catchAsyncErrors(async (req: Request, res: Response
   const service = await serviceService.updateService(id, body);
 
   return sendSuccessResponse(res, 201, "Service updated successfully", service);
+});
+
+export const getLatestServices = catchAsyncErrors(async (req: AuthenticatedRequest, res: Response) => {
+  const userId = parseInt(req.params.userId, 10)
+  const services = await serviceService.getLatestServicesByEmployee(userId);
+
+  return sendSuccessResponse(res, 200, "Latest services fetched", services);
+});
+
+export const getTopService = catchAsyncErrors(async (req: AuthenticatedRequest, res: Response) => {
+  const userId = parseInt(req.params.userId, 10)
+  const service = await serviceService.getTopRatedServiceByEmployee(userId);
+
+  return sendSuccessResponse(res, 200, "Top service fetched", service);
 });
