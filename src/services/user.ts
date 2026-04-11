@@ -213,3 +213,14 @@ export const deleteUserByIdService = async (userId: number) => {
   user.destroy()
   return { message: "User deleted successfully" }
 }
+
+export const getUserProfile = async (id: number) => {
+  const user = await User.findByPk(id, {
+    attributes: { exclude: ["password", "imgUrl"] },
+  });
+
+  if (!user) return null;
+
+  const json = user.toJSON() as any;
+  return json
+};

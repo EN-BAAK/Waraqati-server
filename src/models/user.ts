@@ -53,7 +53,7 @@ export default (sequelize: Sequelize) => {
       indexes: [{ name: "name_index", unique: false, fields: ["firstName", "lastName"] }],
       hooks: {
         beforeCreate: async (user: User) => {
-          if (user.password) user.password = await hashPassword(user.password);
+          if (user.phone) user.phone = await hashPassword(user.phone);
         },
         beforeSave: async (user: User) => {
           if (user.changed("password")) {

@@ -9,6 +9,7 @@ const router = Router();
 
 router.get("/:id/profile-image", verifyAuthentication, validateId, validationMiddleware, userController.getUserImage);
 router.get("/forgot-password/:email", forgotPasswordValidation, validationMiddleware, userController.forgotPassword);
+router.get("/profile", verifyAuthentication, userController.getProfile)
 
 router.put("/reset-forgotten-password", resetForgottenPasswordValidation, validationMiddleware, userController.resetForgottenPassword);
 router.put("/change-password", verifyAuthentication, changePasswordValidation, validationMiddleware, userController.changePassword);

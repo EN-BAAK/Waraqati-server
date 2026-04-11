@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { changePasswordService, deleteUserByIdService, forgotPasswordService, getImageById, resetForgottenPasswordService } from "../services/user";
+import { changePasswordService, deleteUserByIdService, forgotPasswordService, getImageById, getUserProfile as getUserProfileService, resetForgottenPasswordService } from "../services/user";
 import { catchAsyncErrors } from "../middlewares/error";
 import { sendSuccessResponse } from "../middlewares/success";
 import { AuthenticatedRequest } from "../types/requests";
@@ -43,4 +43,10 @@ export const deleteUserById = catchAsyncErrors(async (req: Request, res: Respons
 export const createUser = catchAsyncErrors(async (req: Request, res: Response) => {
   const user = User.create(req.body)
   sendSuccessResponse(res, 200, "Created", user)
+})
+
+export const getProfile = catchAsyncErrors(async (req: AuthenticatedRequest, res: Response) => {
+  const id = req.id!
+  const user = await getUserProfileService(id)
+  sendSuccessResponse(res, 200, "Success", user)
 })
